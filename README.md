@@ -175,10 +175,13 @@ $rectorConfig->sets([
 - [Configuration avancée](docs/advanced-config.md)
 - [Personnalisation](docs/customization.md)
 - [Dépannage](docs/troubleshooting.md)
+- [🇺🇸 English documentation](README-EN.md)
 
 ## 🤝 Contribution
 
 Les contributions sont les bienvenues ! Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour les détails.
+
+📖 **Documentation de contribution** : [🇫🇷 Français](CONTRIBUTING.md) | [🇺🇸 English](CONTRIBUTING-EN.md)
 
 ## 📄 Licence
 
