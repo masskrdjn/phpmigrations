@@ -72,22 +72,22 @@ phpmigrations/
 
 ## 📖 Guide d'utilisation
 
-### Migration rapide (recommandée)
+### Interface interactive
 ```powershell
-# Interface interactive - choisissez votre configuration
+# Menu interactif - choisissez votre configuration
 .\rector-analyze.ps1
 ```
 
-### Migration spécifique
+### Migration spécifique (projets simples)
 ```powershell
 # PHP 7.4 → PHP 8.1
 .\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector-php81.php"
 
-# Legacy → Moderne
+# Legacy → Moderne (migration directe)
 .\rector-analyze.ps1 -ProjectPath "C:\ancien\projet" -ConfigFile "rector-legacy-to-modern.php"
 ```
 
-### Analyse par étapes (projets complexes)
+### Migration par étapes (recommandée pour projets complexes)
 ```powershell
 # Étape 1 : PHP ancien → PHP 7.4
 .\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php74.php"
@@ -129,9 +129,9 @@ config/
 - Tests après chaque étape
 
 **Migration directe :**
-- Projets simples ou scripts
+- Projets simples ou scripts de petite taille
 - `rector-legacy-to-modern.php` pour migration complète
-- Gain de temps sur petits projets
+- Plus rapide mais plus risquée
 
 ### Personnalisation
 ```php
