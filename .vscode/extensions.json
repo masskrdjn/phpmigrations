@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-vscode.powershell",
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "felixfbecker.php-intellisense",
+        "ms-vscode.vscode-json",
+        "davidanson.vscode-markdownlint",
+        "yzhang.markdown-all-in-one",
+        "ms-vscode.vscode-typescript-next"
+    ]
+}

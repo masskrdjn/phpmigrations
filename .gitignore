@@ -1,0 +1,67 @@
+# Rector PHP Analysis Tools - .gitignore
+
+# Outputs générés
+output/
+rector-output/
+*.log
+rector-*.md
+rector-*.json
+rector-*.html
+
+# Cache Rector
+var/cache/
+.rector-cache/
+rector-cache/
+
+# Fichiers temporaires PowerShell
+*.tmp
+*.temp
+
+# IDE et éditeurs
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Composer (si utilisé)
+vendor/
+composer.lock
+
+# Tests
+tests/temp/
+tests/output/
+
+# Backups
+*.bak
+*.backup
+
+# Logs spécifiques
+error.log
+debug.log
+rector.log
+
+# Configuration locale
+config/local/
+*.local.php
+*.local.json
+
+# Données sensibles
+*.key
+*.pem
+secrets/
+
+# Fichiers de taille importante
+*.zip
+*.tar.gz
+*.rar
+
+# Cache Windows PowerShell
+$PROFILE
+Microsoft.PowerShell_profile.ps1

@@ -1,0 +1,171 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🔍 Rector: Analyse Simple",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -OutputFormat simple -Interactive:$false"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": false
+            },
+            "problemMatcher": [],
+            "detail": "Analyse rapide du code PHP avec Rector"
+        },
+        {
+            "label": "📋 Rector: Analyse Détaillée",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -OutputFormat detailed -Interactive:$false -OutputFile output\\rector-detailed.md"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Analyse complète avec rapport détaillé"
+        },
+        {
+            "label": "⚙️ Rector: Installation",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\scripts\\install-rector.ps1"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Installation et configuration de Rector"
+        },
+        {
+            "label": "🚀 Rector: Menu Interactif",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Interface interactive complète"
+        },
+        {
+            "label": "📊 Rector: Analyse Projet Courant",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ProjectPath \"${workspaceFolder}\" -OutputFormat readable -Interactive:$false"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Analyse le workspace VS Code actuel"
+        },
+        {
+            "label": "🔄 Migration: PHP Legacy → Moderne",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ConfigFile config\\rector-legacy-to-modern.php -OutputFormat detailed -Interactive:$false"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Migration complète depuis PHP ancien vers moderne"
+        },
+        {
+            "label": "🎯 Migration: PHP 7.4 → 8.1",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ConfigFile config\\rector-php81.php -OutputFormat readable -Interactive:$false"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Migration vers PHP 8.1 (version recommandée)"
+        },
+        {
+            "label": "🚀 Migration: PHP 8.x → 8.4",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ConfigFile config\\rector-php84.php -OutputFormat detailed -Interactive:$false"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Migration vers PHP 8.4 (dernière version)"
+        },
+        {
+            "label": "🛠️ Configuration: Flexible",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ConfigFile config\\rector-flexible.php -OutputFormat readable -Interactive:$false"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Utilise la configuration flexible personnalisable"
+        }
+    ]
+}

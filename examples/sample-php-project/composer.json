@@ -1,0 +1,19 @@
+{
+    "name": "phpmigrations/sample-project",
+    "description": "Exemple de projet PHP pour tests Rector",
+    "type": "project",
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "rector/rector": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SampleProject\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
