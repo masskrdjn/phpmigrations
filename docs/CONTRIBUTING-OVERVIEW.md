@@ -4,20 +4,7 @@
 
 ## 🌐 Available languages
 
-### 🇫🇷 Documentation française
-
-**[CONTRIBUTING.md](../CONTRIBUTING.md)** - Guide complet de contribution en français
-
-**Contenu :**
-- Comment signaler un bug
-- Proposer des améliorations
-- Soumettre du code
-- Guidelines de développement PowerShell
-- Conventions de nommage
-- Tests et validation
-- Style de code
-
-### 🇺🇸 English documentation
+### �� English documentation (Default)
 
 **[CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md)** - Complete contributing guide in English
 
@@ -30,15 +17,28 @@
 - Testing and validation
 - Code style
 
+### �� Documentation française
+
+**[CONTRIBUTING.md](../CONTRIBUTING.md)** - Guide complet de contribution en français
+
+**Contenu :**
+- Comment signaler un bug
+- Proposer des améliorations
+- Soumettre du code
+- Guidelines de développement PowerShell
+- Conventions de nommage
+- Tests et validation
+- Style de code
+
 ## 🎯 Quick access by task
 
-| Task | Français | English |
-|------|----------|---------|
-| **Report a bug** | [Bug reporting](../CONTRIBUTING.md#signaler-un-bug) | [Bug reporting](../CONTRIBUTING-EN.md#report-a-bug) |
-| **Feature request** | [Proposer une amélioration](../CONTRIBUTING.md#proposer-une-amélioration) | [Suggest an improvement](../CONTRIBUTING-EN.md#suggest-an-improvement) |
-| **Code contribution** | [Soumettre du code](../CONTRIBUTING.md#soumettre-du-code) | [Submit code](../CONTRIBUTING-EN.md#submit-code) |
-| **Documentation** | [Guidelines](../CONTRIBUTING.md#documentation) | [Guidelines](../CONTRIBUTING-EN.md#documentation) |
-| **Testing** | [Tests](../CONTRIBUTING.md#tests) | [Testing](../CONTRIBUTING-EN.md#testing) |
+| Task | English | Français |
+|------|---------|----------|
+| **Report a bug** | [Bug reporting](../CONTRIBUTING-EN.md#report-a-bug) | [Bug reporting](../CONTRIBUTING.md#signaler-un-bug) |
+| **Feature request** | [Suggest an improvement](../CONTRIBUTING-EN.md#suggest-an-improvement) | [Proposer une amélioration](../CONTRIBUTING.md#proposer-une-amélioration) |
+| **Code contribution** | [Submit code](../CONTRIBUTING-EN.md#submit-code) | [Soumettre du code](../CONTRIBUTING.md#soumettre-du-code) |
+| **Documentation** | [Guidelines](../CONTRIBUTING-EN.md#documentation) | [Guidelines](../CONTRIBUTING.md#documentation) |
+| **Testing** | [Testing](../CONTRIBUTING-EN.md#testing) | [Tests](../CONTRIBUTING.md#tests) |
 
 ## 🛠️ Developer resources
 
@@ -63,8 +63,8 @@ Special guidelines for:
 ## 🚀 Quick start for contributors
 
 1. **Choose your language**
-   - 🇫🇷 French speakers: [CONTRIBUTING.md](../CONTRIBUTING.md)
-   - 🇺🇸 English speakers: [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md)
+   - �� English speakers: [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) (Default)
+   - �� French speakers: [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 2. **Read the guidelines**
    - Development standards

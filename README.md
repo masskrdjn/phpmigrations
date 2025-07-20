@@ -1,65 +1,65 @@
 # Rector PHP Analysis Tools
 
-> **Outils d'analyse et de modernisation PHP avec Rector - Scripts PowerShell pour rapports lisibles**
-> **✨ Nouveau : Support de migration depuis toutes les versions PHP principales !**
+> **PHP analysis and modernization tools with Rector - PowerShell scripts for readable reports**
+> **✨ New: Support for migration from all major PHP versions!**
 
-## 🎯 Vue d'ensemble
+## 🎯 Overview
 
-Ce projet fournit une suite d'outils PowerShell pour analyser et moderniser votre code PHP avec [Rector](https://github.com/rectorphp/rector). Il transforme la sortie JSON brute de Rector en rapports lisibles et exploitables, et supporte maintenant la migration depuis **toutes les versions PHP principales** (5.6 → 8.4).
+This project provides a suite of PowerShell tools to analyze and modernize your PHP code with [Rector](https://github.com/rectorphp/rector). It transforms Rector's raw JSON output into readable and actionable reports, and now supports migration from **all major PHP versions** (5.6 → 8.4).
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- **Migration multi-versions** : PHP 5.6, 7.x, 8.x → version moderne
-- **Analyse automatique** : Scan complet de votre code PHP
-- **Rapports lisibles** : Conversion JSON → Markdown/HTML
-- **Multiple formats** : Simple, détaillé, ou sur-mesure
-- **Interface interactive** : Menu PowerShell intuitif
-- **Configurations pré-définies** : 11 versions PHP supportées
-- **Migration progressive** : Étape par étape ou directe
-- **Compatible Windows** : Optimisé pour PowerShell 5.1+
+- **Multi-version migration**: PHP 5.6, 7.x, 8.x → modern version
+- **Automatic analysis**: Complete PHP code scanning
+- **Readable reports**: JSON → Markdown/HTML conversion
+- **Multiple formats**: Simple, detailed, or custom
+- **Interactive interface**: Intuitive PowerShell menu
+- **Pre-defined configurations**: 11 supported PHP versions
+- **Progressive migration**: Step-by-step or direct
+- **Windows compatible**: Optimized for PowerShell 5.1+
 
-## 🚀 Installation rapide
+## 🚀 Quick installation
 
-1. **Cloner le projet**
+1. **Clone the project**
    ```powershell
-   git clone [URL_DU_REPO]
+   git clone [REPO_URL]
    cd phpmigrations
    ```
 
-2. **Installer Rector**
+2. **Install Rector**
    ```powershell
    .\scripts\install-rector.ps1
    ```
 
-3. **Premier scan**
+3. **First scan**
    ```powershell
    .\rector-analyze.ps1
    ```
 
-## 📁 Structure du projet
+## 📁 Project structure
 
 ```
 phpmigrations/
-├── scripts/           # Scripts PowerShell principaux
-├── config/           # Configurations Rector
-├── templates/        # Modèles de rapports
-├── examples/         # Exemples d'utilisation
-├── docs/            # Documentation détaillée
-└── output/          # Rapports générés
+├── scripts/           # Main PowerShell scripts
+├── config/           # Rector configurations
+├── templates/        # Report templates
+├── examples/         # Usage examples
+├── docs/            # Detailed documentation
+└── output/          # Generated reports
 ```
 
-## 🔧 Scripts disponibles
+## 🔧 Available scripts
 
 | Script | Description | Usage |
 |--------|-------------|-------|
-| `rector-analyze.ps1` | **Menu principal** | Interface interactive |
-| `analyze-rector-simple.ps1` | Rapport basique | Résumé rapide |
-| `analyze-rector-readable.ps1` | Rapport détaillé | Analyse complète |
-| `analyze-rector-detailed.ps1` | Rapport exhaustif | Avec explications |
+| `rector-analyze.ps1` | **Main menu** | Interactive interface |
+| `analyze-rector-simple.ps1` | Basic report | Quick summary |
+| `analyze-rector-readable.ps1` | Detailed report | Complete analysis |
+| `analyze-rector-detailed.ps1` | Comprehensive report | With explanations |
 
-## 🎯 Versions PHP supportées
+## 🎯 Supported PHP versions
 
-| Version Source | Version Cible | Configuration | Complexité |
+| Source Version | Target Version | Configuration | Complexity |
 |----------------|---------------|---------------|------------|
 | **PHP 5.6** | PHP 7.0+ | `rector-php70.php` | ⭐⭐⭐ |
 | **PHP 7.0** | PHP 7.4+ | `rector-php74.php` | ⭐⭐ |
@@ -68,129 +68,129 @@ phpmigrations/
 | **PHP 8.1** | PHP 8.2+ | `rector-php82.php` | ⭐ |
 | **PHP 8.2** | PHP 8.3+ | `rector-php83.php` | ⭐ |
 | **PHP 8.3** | PHP 8.4 | `rector-php84.php` | ⭐ |
-| **Legacy** | Moderne | `rector-legacy-to-modern.php` | ⭐⭐⭐⭐ |
+| **Legacy** | Modern | `rector-legacy-to-modern.php` | ⭐⭐⭐⭐ |
 
-## 📖 Guide d'utilisation
+## 📖 Usage guide
 
-### Interface interactive
+### Interactive interface
 ```powershell
-# Menu interactif - choisissez votre configuration
+# Interactive menu - choose your configuration
 .\rector-analyze.ps1
 ```
 
-### Migration spécifique (projets simples)
+### Specific migration (simple projects)
 ```powershell
 # PHP 7.4 → PHP 8.1
-.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector-php81.php"
+.\rector-analyze.ps1 -ProjectPath "C:\my\project" -ConfigFile "rector-php81.php"
 
-# Legacy → Moderne (migration directe)
-.\rector-analyze.ps1 -ProjectPath "C:\ancien\projet" -ConfigFile "rector-legacy-to-modern.php"
+# Legacy → Modern (direct migration)
+.\rector-analyze.ps1 -ProjectPath "C:\old\project" -ConfigFile "rector-legacy-to-modern.php"
 ```
 
-### Migration par étapes (recommandée pour projets complexes)
+### Step-by-step migration (recommended for complex projects)
 ```powershell
-# Étape 1 : PHP ancien → PHP 7.4
-.\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php74.php"
+# Step 1: Old PHP → PHP 7.4
+.\rector-analyze.ps1 -ProjectPath "C:\project" -ConfigFile "rector-php74.php"
 
-# Étape 2 : PHP 7.4 → PHP 8.1  
-.\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php81.php"
+# Step 2: PHP 7.4 → PHP 8.1  
+.\rector-analyze.ps1 -ProjectPath "C:\project" -ConfigFile "rector-php81.php"
 
-# Étape 3 : PHP 8.1 → PHP 8.4
-.\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php84.php"
+# Step 3: PHP 8.1 → PHP 8.4
+.\rector-analyze.ps1 -ProjectPath "C:\project" -ConfigFile "rector-php84.php"
 ```
 
 ## ⚙️ Configuration
 
-### Configurations pré-définies
-Le projet inclut 11 configurations prêtes à l'emploi :
+### Pre-defined configurations
+The project includes 11 ready-to-use configurations:
 
 ```
 config/
-├── rector-php56.php      # Migration vers PHP 5.6
-├── rector-php70.php      # Migration vers PHP 7.0  
-├── rector-php71.php      # Migration vers PHP 7.1
-├── rector-php72.php      # Migration vers PHP 7.2
-├── rector-php73.php      # Migration vers PHP 7.3
-├── rector-php74.php      # Migration vers PHP 7.4
-├── rector-php80.php      # Migration vers PHP 8.0
-├── rector-php81.php      # Migration vers PHP 8.1
-├── rector-php82.php      # Migration vers PHP 8.2
-├── rector-php83.php      # Migration vers PHP 8.3
-├── rector-php84.php      # Migration vers PHP 8.4
-├── rector-flexible.php        # Configuration personnalisable
-└── rector-legacy-to-modern.php # Migration complète ancien→moderne
+├── rector-php56.php      # Migration to PHP 5.6
+├── rector-php70.php      # Migration to PHP 7.0  
+├── rector-php71.php      # Migration to PHP 7.1
+├── rector-php72.php      # Migration to PHP 7.2
+├── rector-php73.php      # Migration to PHP 7.3
+├── rector-php74.php      # Migration to PHP 7.4
+├── rector-php80.php      # Migration to PHP 8.0
+├── rector-php81.php      # Migration to PHP 8.1
+├── rector-php82.php      # Migration to PHP 8.2
+├── rector-php83.php      # Migration to PHP 8.3
+├── rector-php84.php      # Migration to PHP 8.4
+├── rector-flexible.php        # Customizable configuration
+└── rector-legacy-to-modern.php # Complete old→modern migration
 ```
 
-### Choisir la bonne configuration
+### Choosing the right configuration
 
-**Migration progressive (recommandée) :**
-- Projets complexes ou critiques
-- Migration étape par étape pour minimiser les risques
-- Tests après chaque étape
+**Progressive migration (recommended):**
+- Complex or critical projects
+- Step-by-step migration to minimize risks
+- Testing after each step
 
-**Migration directe :**
-- Projets simples ou scripts de petite taille
-- `rector-legacy-to-modern.php` pour migration complète
-- Plus rapide mais plus risquée
+**Direct migration:**
+- Simple projects or small scripts
+- `rector-legacy-to-modern.php` for complete migration
+- Faster but riskier
 
-### Personnalisation
+### Customization
 ```php
 // rector-custom.php
 $rectorConfig->sets([
-    LevelSetList::UP_TO_PHP_82,  // Votre version cible
-    SetList::CODE_QUALITY,       // Règles selon vos besoins
+    LevelSetList::UP_TO_PHP_82,  // Your target version
+    SetList::CODE_QUALITY,       // Rules according to your needs
 ]);
 ```
 
-## 🎨 Exemples de rapports
+## 🎨 Report examples
 
-### Format simple
+### Simple format
 ```markdown
-# Analyse Rector - MonProjet
+# Rector Analysis - MyProject
 
-📊 **Résumé** : 15 fichiers, 42 améliorations possibles
-🎯 **Cible** : PHP 8.4
-⚡ **Impact** : Modernisation recommandée
+📊 **Summary**: 15 files, 42 possible improvements
+🎯 **Target**: PHP 8.4
+⚡ **Impact**: Modernization recommended
 ```
 
-### Format détaillé
+### Detailed format
 ```markdown
 ## 📂 src/Models/User.php
-- **Ligne 23** : `AddArrayDefaultToArrayPropertyRector`
-- **Suggestion** : Ajouter `= []` par défaut
-- **Avant** : `private array $roles;`
-- **Après** : `private array $roles = [];`
+- **Line 23**: `AddArrayDefaultToArrayPropertyRector`
+- **Suggestion**: Add `= []` by default
+- **Before**: `private array $roles;`
+- **After**: `private array $roles = [];`
 ```
 
-## 🛠️ Prérequis
+## 🛠️ Prerequisites
 
-- **Windows** : PowerShell 5.1 ou supérieur
-- **PHP** : 7.4+ (recommandé : 8.1+)
-- **Composer** : Pour l'installation de Rector
-- **Git** : Pour le clonage et les mises à jour
+- **Windows**: PowerShell 5.1 or higher
+- **PHP**: 7.4+ (recommended: 8.1+)
+- **Composer**: For Rector installation
+- **Git**: For cloning and updates
 
 ## 📚 Documentation
 
-- [Guide de démarrage](docs/getting-started.md)
-- [Configuration avancée](docs/advanced-config.md)
-- [Personnalisation](docs/customization.md)
-- [Dépannage](docs/troubleshooting.md)
-- [🇺🇸 English documentation](README-EN.md)
+- [Getting started guide](docs/getting-started.md)
+- [Advanced configuration](docs/advanced-config.md)
+- [Customization](docs/customization.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [🇫🇷 Documentation française](README-FR.md)
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour les détails.
+Contributions are welcome! See [CONTRIBUTING-EN.md](CONTRIBUTING-EN.md) for details.
 
-📖 **Documentation de contribution** : [🇫🇷 Français](CONTRIBUTING.md) | [🇺🇸 English](CONTRIBUTING-EN.md)
+📖 **Contributing documentation**: [�� English](CONTRIBUTING-EN.md) | [�� Français](CONTRIBUTING.md)
 
-## 📄 Licence
+## 📄 License
 
-MIT License - voir [LICENSE](LICENSE) pour plus de détails.
+MIT License - see [LICENSE](LICENSE) for more details.
 
-## 🙏 Remerciements
+## 🙏 Acknowledgments
 
-- [Rector](https://github.com/rectorphp/rector) - L'outil de modernisation PHP
-- Communauté PHP - Pour le feedback et les améliorations
+- [Rector](https://github.com/rectorphp/rector) - The PHP modernization tool
+- PHP Community - For feedback and improvements
 
 ---
 

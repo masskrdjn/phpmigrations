@@ -5,27 +5,10 @@
 
 ## 🌐 Languages / Langues
 
-### 🇫🇷 Documentation en Français
-
-#### Guides principaux
-- **[README.md](../README.md)** - Documentation principale du projet
-- **[Guide de démarrage rapide](quick-start.md)** - Mise en route en 5 minutes
-- **[Guide de migration](migration-guide.md)** - Migration complète multi-versions
-- **[Nouvelles fonctionnalités](../NOUVELLES-FONCTIONNALITES.md)** - Extension multi-versions
-
-#### Guides spécialisés
-- **[Configuration avancée](advanced-config.md)** - Personnalisation approfondie
-- **[Premiers pas](getting-started.md)** - Installation et premiers tests
-
-#### Historique du projet
-- **[Historique de développement](../DEVELOPMENT-HISTORY.md)** - Évolution complète du projet
-- **[Rapport de création](../CREATION-REPORT.md)** - Genèse du projet
-- **[Guide de contribution](../CONTRIBUTING.md)** - Comment contribuer
-
-### 🇺🇸 English Documentation
+### �� English Documentation
 
 #### Main guides
-- **[README-EN.md](../README-EN.md)** - Main project documentation
+- **[README.md](../README.md)** - Main project documentation
 - **[Quick Start Guide](quick-start-en.md)** - Setup in 5 minutes
 - **[Migration Guide](migration-guide-en.md)** - Complete multi-version migration
 - **[New Features](../NEW-FEATURES-EN.md)** - Multi-version extension
@@ -39,35 +22,52 @@
 - **[Creation Report](../CREATION-REPORT.md)** - Project genesis
 - **[Contributing Guide](../CONTRIBUTING-EN.md)** - How to contribute
 
+### �� Documentation en Français
+
+#### Guides principaux
+- **[README-FR.md](../README-FR.md)** - Documentation principale du projet
+- **[Guide de démarrage rapide](quick-start.md)** - Mise en route en 5 minutes
+- **[Guide de migration](migration-guide.md)** - Migration complète multi-versions
+- **[Nouvelles fonctionnalités](../NOUVELLES-FONCTIONNALITES.md)** - Extension multi-versions
+
+#### Guides spécialisés
+- **[Configuration avancée](advanced-config.md)** - Personnalisation approfondie
+- **[Premiers pas](getting-started.md)** - Installation et premiers tests
+
+#### Historique du projet
+- **[Historique de développement](../DEVELOPMENT-HISTORY.md)** - Évolution complète du projet
+- **[Rapport de création](../CREATION-REPORT.md)** - Genèse du projet
+- **[Guide de contribution](../CONTRIBUTING.md)** - Comment contribuer
+
 ## 🎯 Documentation par scénario / Documentation by Scenario
 
 ### Migration Scenarios / Scénarios de migration
 
-| Scenario | Français | English |
-|----------|----------|---------|
-| **Démarrage rapide** | [quick-start.md](quick-start.md) | [quick-start-en.md](quick-start-en.md) |
-| **Migration progressive** | [migration-guide.md](migration-guide.md) | [migration-guide-en.md](migration-guide-en.md) |
-| **Configuration custom** | [advanced-config.md](advanced-config.md) | [advanced-config.md](advanced-config.md) |
+| Scenario | English | Français |
+|----------|---------|----------|
+| **Quick start / Démarrage rapide** | [quick-start-en.md](quick-start-en.md) | [quick-start.md](quick-start.md) |
+| **Progressive migration / Migration progressive** | [migration-guide-en.md](migration-guide-en.md) | [migration-guide.md](migration-guide.md) |
+| **Custom configuration / Configuration custom** | [advanced-config.md](advanced-config.md) | [advanced-config.md](advanced-config.md) |
 
 ### Project Levels / Niveaux de projet
 
 | Level | Description | Documentation |
 |-------|-------------|---------------|
-| **Débutant / Beginner** | First use | [getting-started.md](getting-started.md) |
-| **Intermédiaire / Intermediate** | Common migrations | [quick-start.md](quick-start.md) / [quick-start-en.md](quick-start-en.md) |
-| **Avancé / Advanced** | Custom configurations | [advanced-config.md](advanced-config.md) |
-| **Expert** | Contribution & development | [CONTRIBUTING.md](../CONTRIBUTING.md) / [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) |
+| **Beginner / Débutant** | First use | [getting-started.md](getting-started.md) |
+| **Intermediate / Intermédiaire** | Common migrations | [quick-start-en.md](quick-start-en.md) / [quick-start.md](quick-start.md) |
+| **Advanced / Avancé** | Custom configurations | [advanced-config.md](advanced-config.md) |
+| **Expert** | Contribution & development | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) / [CONTRIBUTING.md](../CONTRIBUTING.md) |
 
 ## 🤝 Contributing / Contribution
 
 ### How to contribute / Comment contribuer
 
-| Task / Tâche | Français | English |
-|--------------|----------|---------|
-| **Bug report / Signaler un bug** | [CONTRIBUTING.md](../CONTRIBUTING.md) | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) |
-| **Feature request / Demander une fonctionnalité** | [CONTRIBUTING.md](../CONTRIBUTING.md) | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) |
-| **Code contribution / Contribution de code** | [CONTRIBUTING.md](../CONTRIBUTING.md) | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) |
-| **Documentation / Documentation** | [CONTRIBUTING.md](../CONTRIBUTING.md) | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) |
+| Task / Tâche | English | Français |
+|--------------|---------|----------|
+| **Bug report / Signaler un bug** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
+| **Feature request / Demander une fonctionnalité** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
+| **Code contribution / Contribution de code** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
+| **Documentation / Documentation** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
 
 ## 🔧 Technical Documentation / Documentation Technique
 
@@ -92,7 +92,7 @@
 |--------|---------|---------------|
 | `rector-analyze.ps1` | Main interface | [README.md](../README.md) |
 | `scripts/install-rector.ps1` | Installation | [getting-started.md](getting-started.md) |
-| `scripts/analyze-*.ps1` | Report generation | [quick-start.md](quick-start.md) |
+| `scripts/analyze-*.ps1` | Report generation | [quick-start-en.md](quick-start-en.md) |
 
 ## 🎮 VS Code Integration / Intégration VS Code
 
@@ -138,3 +138,5 @@ PHP 5.6 → PHP 7.0 → PHP 7.4 → PHP 8.1 → PHP 8.4
 ---
 
 💡 **Tip / Conseil** : Start with the Quick Start guide appropriate to your language / Commencez par le guide de démarrage rapide dans votre langue !
+
+📖 **Default language**: English documentation is shown first / **Langue par défaut** : La documentation anglaise est affichée en premier

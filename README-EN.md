@@ -181,7 +181,7 @@ $rectorConfig->sets([
 
 Contributions are welcome! See [CONTRIBUTING-EN.md](CONTRIBUTING-EN.md) for details.
 
-📖 **Contributing documentation**: [🇫🇷 Français](CONTRIBUTING.md) | [🇺🇸 English](CONTRIBUTING-EN.md)
+📖 **Contributing documentation**: [�� English](CONTRIBUTING-EN.md) | [�� Français](CONTRIBUTING.md)
 
 ## 📄 License
 
