@@ -209,22 +209,73 @@ function Run-RectorAnalysis {
     
     Push-Location $ProjectPath
     try {
-        # Construction de la commande
-        $rectorBin = if (Test-Path "vendor\bin\rector.bat") {
-            "vendor\bin\rector.bat"
+        # Construction de la commande - Chercher Rector dans plusieurs emplacements
+        $rectorBin = $null
+        
+        # 1. Dans le projet analysé
+        if (Test-Path "vendor\bin\rector.bat") {
+            $rectorBin = "vendor\bin\rector.bat"
         } elseif (Test-Path "vendor\bin\rector") {
-            "vendor\bin\rector"
-        } else {
-            "rector"
+            $rectorBin = "vendor\bin\rector"
         }
         
-        $arguments = @("process")
+        # 2. Dans le projet d'exemples (fallback)
+        if (-not $rectorBin) {
+            $exampleProject = Join-Path $PSScriptRoot "examples\sample-php-project"
+            if (Test-Path (Join-Path $exampleProject "vendor\bin\rector.bat")) {
+                $rectorBin = Join-Path $exampleProject "vendor\bin\rector.bat"
+            } elseif (Test-Path (Join-Path $exampleProject "vendor\bin\rector")) {
+                $rectorBin = Join-Path $exampleProject "vendor\bin\rector"
+            }
+        }
+        
+        # 3. Rector global (dernière option)
+        if (-not $rectorBin) {
+            $globalRector = Get-Command rector -ErrorAction SilentlyContinue
+            if ($globalRector) {
+                $rectorBin = "rector"
+            }
+        }
+        
+        # 4. Si aucun Rector trouvé, installer dans le projet d'exemples
+        if (-not $rectorBin) {
+            Write-Host "Rector non trouvé. Installation en cours..." -ForegroundColor Yellow
+            $installScript = Join-Path $PSScriptRoot "scripts\install-rector.ps1"
+            if (Test-Path $installScript) {
+                & $installScript
+                $exampleProject = Join-Path $PSScriptRoot "examples\sample-php-project"
+                if (Test-Path (Join-Path $exampleProject "vendor\bin\rector.bat")) {
+                    $rectorBin = Join-Path $exampleProject "vendor\bin\rector.bat"
+                }
+            }
+            
+            if (-not $rectorBin) {
+                throw "Rector n'a pas pu être installé ou trouvé. Veuillez l'installer manuellement."
+            }
+        }
+        
+        # Préparer les arguments et les chemins
+        $arguments = @("process", ".")  # Analyser le dossier courant
         if ($DryRun) {
             $arguments += "--dry-run"
         }
-        $arguments += @("--output-format=json", "--config=$ConfigFile")
+        
+        # Utiliser un chemin absolu pour la configuration si Rector n'est pas local
+        $configPath = $ConfigFile
+        if (-not (Test-Path $ConfigFile -PathType Leaf)) {
+            $configPath = Join-Path $PSScriptRoot $ConfigFile
+        }
+        if (-not ([System.IO.Path]::IsPathRooted($configPath))) {
+            $configPath = Resolve-Path $configPath -ErrorAction SilentlyContinue
+            if (-not $configPath) {
+                $configPath = Join-Path $PSScriptRoot $ConfigFile
+            }
+        }
+        
+        $arguments += @("--output-format=json", "--config=$configPath")
         
         Write-Host "Commande: $rectorBin $($arguments -join ' ')" -ForegroundColor Gray
+        Write-Host "Configuration: $configPath" -ForegroundColor Gray
         Write-Host ""
         
         # Execution
@@ -277,7 +328,23 @@ function Format-SimpleOutput {
     param([string]$JsonOutput, [string]$ProjectPath)
     
     try {
-        $data = $JsonOutput | ConvertFrom-Json -ErrorAction Stop
+        # Nettoyer la sortie - supprimer les warnings PHP et ne garder que le JSON
+        $lines = $JsonOutput -split "`n"
+        $jsonStart = -1
+        
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i].TrimStart().StartsWith("{")) {
+                $jsonStart = $i
+                break
+            }
+        }
+        
+        if ($jsonStart -ge 0) {
+            $cleanJson = ($lines[$jsonStart..($lines.Count-1)] -join "`n").Trim()
+            $data = $cleanJson | ConvertFrom-Json -ErrorAction Stop
+        } else {
+            throw "Aucun JSON valide trouvé dans la sortie"
+        }
         
         $output = @"
 # Analyse Rector - $(Split-Path $ProjectPath -Leaf)
@@ -290,10 +357,13 @@ function Format-SimpleOutput {
 "@
         
         if ($data.totals) {
+            $changedFiles = if ($data.totals.changed_files) { $data.totals.changed_files } else { 0 }
+            $errors = if ($data.totals.errors) { $data.totals.errors } else { 0 }
+            
             $output += @"
-- **Fichiers analyses**: $($data.totals.changed_files + $data.totals.unchanged_files)
-- **Fichiers modifies**: $($data.totals.changed_files)
-- **Changements appliques**: $($data.totals.applied_rectors)
+- **Fichiers modifies**: $changedFiles
+- **Erreurs detectees**: $errors
+- **Statut**: $(if ($changedFiles -gt 0) { "Ameliorations possibles" } else { "Code deja moderne" })
 
 "@
         }
@@ -301,11 +371,23 @@ function Format-SimpleOutput {
         if ($data.file_diffs -and $data.file_diffs.Count -gt 0) {
             $output += "## Fichiers impactes`n`n"
             foreach ($file in $data.file_diffs) {
-                $relativePath = $file.file -replace [regex]::Escape($ProjectPath), ""
-                $output += "- ``$relativePath`` ($($file.applied_rectors.Count) changements)`n"
+                $fileName = Split-Path $file.file -Leaf
+                $rectorsApplied = $file.applied_rectors.Count
+                $output += "- **``$fileName``** ($rectorsApplied changements appliques)`n"
+                
+                # Afficher les types de changements
+                $rectorTypes = @()
+                foreach ($rector in $file.applied_rectors) {
+                    $rectorName = ($rector -split '\\')[-1] -replace 'Rector$', ''
+                    $rectorTypes += $rectorName
+                }
+                if ($rectorTypes.Count -gt 0) {
+                    $output += "  - Types: " + ($rectorTypes -join ", ") + "`n"
+                }
             }
+            $output += "`n"
         } else {
-            $output += "**Aucun changement detecte** - Votre code est deja optimise !"
+            $output += "## Aucun changement detecte`n`n**Votre code est deja moderne !**`n"
         }
         
         return $output
@@ -314,10 +396,11 @@ function Format-SimpleOutput {
         return @"
 # Erreur d'analyse
 
-Impossible de parser la sortie JSON:
-``````
+Impossible de parser la sortie JSON. Voici la sortie brute :
+
+```
 $JsonOutput
-``````
+```
 "@
     }
 }

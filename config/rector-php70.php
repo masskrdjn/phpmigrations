@@ -13,11 +13,13 @@ use Rector\Set\ValueObject\SetList;
  * scalar type declarations, return type declarations, etc.
  */
 return static function (RectorConfig $rectorConfig): void {
+    // Configuration des chemins - sera écrasée par le script principal
     $rectorConfig->paths([
-        __DIR__ . '/src',
-        __DIR__ . '/classes',
-        __DIR__ . '/lib',
-        __DIR__ . '/public',
+        getcwd() . '/*.php',
+        getcwd() . '/src',
+        getcwd() . '/classes', 
+        getcwd() . '/lib',
+        getcwd() . '/public',
         __DIR__ . '/app',
         // Ajoutez vos dossiers ici
     ]);
