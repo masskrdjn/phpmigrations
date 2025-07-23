@@ -80,16 +80,70 @@ function Get-ProjectPath {
                 return Get-Location 
             }
             "2" { 
-                Add-Type -AssemblyName System.Windows.Forms
-                $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
-                $folderBrowser.Description = "Selectionnez le dossier du projet PHP"
-                $folderBrowser.ShowNewFolderButton = $false
-                
-                if ($folderBrowser.ShowDialog() -eq "OK") {
-                    return $folderBrowser.SelectedPath
-                } else {
-                    Write-Host "Selection annulee." -ForegroundColor Red
-                    return ""
+                Write-Host "Parcours des dossiers disponibles..." -ForegroundColor Yellow
+                try {
+                    # Méthode alternative plus robuste
+                    $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Used -gt 0 }
+                    Write-Host ""
+                    Write-Host "Lecteurs disponibles:" -ForegroundColor Cyan
+                    for ($i = 0; $i -lt $drives.Count; $i++) {
+                        $drive = $drives[$i]
+                        $freeSpace = [math]::Round($drive.Free / 1GB, 1)
+                        Write-Host "$($i + 1). $($drive.Name):\ ($freeSpace GB libre)"
+                    }
+                    Write-Host ""
+                    
+                    do {
+                        $driveChoice = Read-Host "Choisissez un lecteur (1-$($drives.Count)) ou 'a' pour annuler"
+                        if ($driveChoice -eq "a") {
+                            Write-Host "Selection annulee." -ForegroundColor Red
+                            return ""
+                        }
+                        
+                        $driveIndex = [int]$driveChoice - 1
+                        if ($driveIndex -ge 0 -and $driveIndex -lt $drives.Count) {
+                            $selectedDrive = $drives[$driveIndex].Name + ":\"
+                            break
+                        } else {
+                            Write-Host "Choix invalide." -ForegroundColor Red
+                        }
+                    } while ($true)
+                    
+                    # Demander le chemin manuel à partir du lecteur sélectionné
+                    Write-Host "Lecteur sélectionné: $selectedDrive" -ForegroundColor Green
+                    $customPath = Read-Host "Entrez le chemin à partir de $selectedDrive (ex: laragon\www\monprojet)"
+                    $fullPath = Join-Path $selectedDrive $customPath
+                    
+                    if (Test-Path $fullPath) {
+                        Write-Host "Chemin validé: $fullPath" -ForegroundColor Green
+                        return $fullPath
+                    } else {
+                        Write-Host "Chemin invalide: $fullPath" -ForegroundColor Red
+                        Write-Host "Voulez-vous créer ce dossier? (o/N)" -ForegroundColor Yellow
+                        $create = Read-Host
+                        if ($create -eq "o" -or $create -eq "O") {
+                            try {
+                                New-Item -ItemType Directory -Path $fullPath -Force | Out-Null
+                                Write-Host "Dossier créé: $fullPath" -ForegroundColor Green
+                                return $fullPath
+                            } catch {
+                                Write-Host "Impossible de créer le dossier: $($_.Exception.Message)" -ForegroundColor Red
+                                return ""
+                            }
+                        } else {
+                            return ""
+                        }
+                    }
+                } catch {
+                    Write-Host "Erreur lors du parcours: $($_.Exception.Message)" -ForegroundColor Red
+                    Write-Host "Utilisation de la méthode manuelle..." -ForegroundColor Yellow
+                    $path = Read-Host "Entrez le chemin complet du projet"
+                    if (Test-Path $path) {
+                        return $path
+                    } else {
+                        Write-Host "Chemin invalide: $path" -ForegroundColor Red
+                        return ""
+                    }
                 }
             }
             "3" { 
