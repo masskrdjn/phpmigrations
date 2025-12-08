@@ -248,6 +248,52 @@ function Get-OutputFormat {
     } while ($true)
 }
 
+function Resolve-ConfigFile {
+    param(
+        [string]$ConfigFile,
+        [string]$ProjectPath = ""
+    )
+    
+    # Si le fichier existe tel quel, le retourner
+    if ($ConfigFile -ne "" -and (Test-Path $ConfigFile -PathType Leaf)) {
+        return (Resolve-Path $ConfigFile).Path
+    }
+    
+    # Liste des emplacements possibles a verifier
+    $searchPaths = @()
+    
+    # 1. Dossier config du toolkit
+    $searchPaths += Join-Path $PSScriptRoot "config\$ConfigFile"
+    
+    # 2. Dossier config parent (si script dans sous-dossier)
+    $searchPaths += Join-Path (Split-Path $PSScriptRoot -Parent) "config\$ConfigFile"
+    
+    # 3. Dossier rector-configs du projet
+    if ($ProjectPath -ne "") {
+        $searchPaths += Join-Path $ProjectPath "rector-configs\$ConfigFile"
+        $searchPaths += Join-Path $ProjectPath $ConfigFile
+    }
+    
+    # 4. Chemin relatif depuis le dossier courant
+    $searchPaths += Join-Path (Get-Location) $ConfigFile
+    
+    # 5. Avec le prefixe "rector-" si non present
+    if (-not $ConfigFile.StartsWith("rector-")) {
+        $searchPaths += Join-Path $PSScriptRoot "config\rector-$ConfigFile"
+        $searchPaths += Join-Path (Split-Path $PSScriptRoot -Parent) "config\rector-$ConfigFile"
+    }
+    
+    # Rechercher dans tous les emplacements
+    foreach ($path in $searchPaths) {
+        if (Test-Path $path -PathType Leaf) {
+            return (Resolve-Path $path).Path
+        }
+    }
+    
+    # Non trouve - retourner le chemin original
+    return $ConfigFile
+}
+
 function Run-RectorAnalysis {
     param(
         [string]$ProjectPath,
@@ -314,15 +360,13 @@ function Run-RectorAnalysis {
             $arguments += "--dry-run"
         }
         
-        # Utiliser un chemin absolu pour la configuration si Rector n'est pas local
+        # Utiliser le chemin de configuration (déjà résolu par Resolve-ConfigFile)
         $configPath = $ConfigFile
-        if (-not (Test-Path $ConfigFile -PathType Leaf)) {
-            $configPath = Join-Path $PSScriptRoot $ConfigFile
-        }
+        # Si le chemin n'est pas absolu, essayer de le résoudre
         if (-not ([System.IO.Path]::IsPathRooted($configPath))) {
-            $configPath = Resolve-Path $configPath -ErrorAction SilentlyContinue
-            if (-not $configPath) {
-                $configPath = Join-Path $PSScriptRoot $ConfigFile
+            $resolvedPath = Resolve-ConfigFile -ConfigFile $ConfigFile -ProjectPath $ProjectPath
+            if (Test-Path $resolvedPath -PathType Leaf) {
+                $configPath = $resolvedPath
             }
         }
         
@@ -672,9 +716,21 @@ if (!(Test-Path $ProjectPath)) {
     exit 1
 }
 
-if ($ConfigFile -ne "" -and !(Test-Path $ConfigFile)) {
-    Write-Host "Erreur: Le fichier de configuration '$ConfigFile' n'existe pas." -ForegroundColor Red
-    exit 1
+# Resolution intelligente du chemin du fichier de configuration
+if ($ConfigFile -ne "") {
+    $resolvedConfig = Resolve-ConfigFile -ConfigFile $ConfigFile -ProjectPath $ProjectPath
+    if (!(Test-Path $resolvedConfig -PathType Leaf)) {
+        Write-Host "Erreur: Le fichier de configuration '$ConfigFile' n'existe pas." -ForegroundColor Red
+        Write-Host "Emplacements recherches:" -ForegroundColor Yellow
+        Write-Host "  - $ConfigFile" -ForegroundColor Gray
+        Write-Host "  - $(Join-Path $PSScriptRoot "config\$ConfigFile")" -ForegroundColor Gray
+        if ($ProjectPath -ne "") {
+            Write-Host "  - $(Join-Path $ProjectPath "rector-configs\$ConfigFile")" -ForegroundColor Gray
+        }
+        exit 1
+    }
+    $ConfigFile = $resolvedConfig
+    Write-Host "Configuration utilisee: $ConfigFile" -ForegroundColor Cyan
 }
 
 # Execution de l'analyse
