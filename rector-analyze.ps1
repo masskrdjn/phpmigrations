@@ -10,8 +10,386 @@ param(
     [string]$OutputFile = "",
     [switch]$DryRun = $true,
     [switch]$Interactive = $true,
-    [switch]$Help = $false
+    [switch]$Help = $false,
+    [switch]$ShowHistory = $false,
+    [int]$HistoryCount = 10,
+    [switch]$ShowLogs = $false
 )
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+# =============================================================================
+# CONFIGURATION DU LOGGING
+# =============================================================================
+
+$script:LogDirectory = Join-Path $PSScriptRoot "logs"
+$script:LogFile = Join-Path $script:LogDirectory "rector-analysis.log"
+$script:AnalysisHistoryFile = Join-Path $script:LogDirectory "analysis-history.json"
+
+# =============================================================================
+# FONCTIONS DE LOGGING
+# =============================================================================
+
+function Initialize-Logging {
+    <#
+    .SYNOPSIS
+        Initialise le système de logging pour l'analyse Rector
+    #>
+    
+    # Créer le dossier de logs s'il n'existe pas
+    if (!(Test-Path $script:LogDirectory)) {
+        New-Item -ItemType Directory -Path $script:LogDirectory -Force | Out-Null
+    }
+    
+    # Initialiser le fichier d'historique s'il n'existe pas
+    if (!(Test-Path $script:AnalysisHistoryFile)) {
+        @{ analyses = @() } | ConvertTo-Json | Set-Content -Path $script:AnalysisHistoryFile -Encoding UTF8
+    }
+}
+
+function Write-AnalysisLog {
+    <#
+    .SYNOPSIS
+        Écrit une entrée dans le fichier de log
+    .PARAMETER Message
+        Message à logger
+    .PARAMETER Level
+        Niveau de log (INFO, WARNING, ERROR, DEBUG)
+    #>
+    param(
+        [string]$Message,
+        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG")]
+        [string]$Level = "INFO"
+    )
+    
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logEntry = "[$timestamp] [$Level] $Message"
+    
+    # Écrire dans le fichier de log
+    Add-Content -Path $script:LogFile -Value $logEntry -Encoding UTF8
+    
+    # Afficher dans la console selon le niveau
+    $color = switch ($Level) {
+        "INFO" { "White" }
+        "WARNING" { "Yellow" }
+        "ERROR" { "Red" }
+        "DEBUG" { "Gray" }
+    }
+    
+    if ($Level -ne "DEBUG" -or $env:RECTOR_DEBUG -eq "1") {
+        Write-Host $logEntry -ForegroundColor $color
+    }
+}
+
+function Get-PhpFilesInProject {
+    <#
+    .SYNOPSIS
+        Récupère la liste de tous les fichiers PHP dans un projet
+    .PARAMETER ProjectPath
+        Chemin du projet à analyser
+    .PARAMETER ExcludePaths
+        Chemins à exclure (vendor, cache, etc.)
+    #>
+    param(
+        [string]$ProjectPath,
+        [string[]]$ExcludePaths = @("vendor", "cache", "tmp", "storage", "var", "node_modules")
+    )
+    
+    $phpFiles = @()
+    
+    try {
+        Get-ChildItem -Path $ProjectPath -Recurse -Filter "*.php" -File -ErrorAction SilentlyContinue | ForEach-Object {
+            $relativePath = $_.FullName.Replace($ProjectPath, "").TrimStart("\", "/")
+            $excluded = $false
+            
+            foreach ($excludePath in $ExcludePaths) {
+                if ($relativePath.StartsWith($excludePath) -or $relativePath.Contains("\$excludePath\") -or $relativePath.Contains("/$excludePath/")) {
+                    $excluded = $true
+                    break
+                }
+            }
+            
+            if (-not $excluded) {
+                $phpFiles += @{
+                    FullPath = $_.FullName
+                    RelativePath = $relativePath
+                    Size = $_.Length
+                    LastModified = $_.LastWriteTime
+                }
+            }
+        }
+    } catch {
+        Write-AnalysisLog "Erreur lors de la récupération des fichiers PHP: $($_.Exception.Message)" -Level "ERROR"
+    }
+    
+    return $phpFiles
+}
+
+function Write-AnalysisStart {
+    <#
+    .SYNOPSIS
+        Log le début d'une analyse avec tous les détails
+    #>
+    param(
+        [string]$ProjectPath,
+        [string]$ConfigFile,
+        [string]$OutputFormat,
+        [bool]$DryRun
+    )
+    
+    $separator = "=" * 80
+    
+    Write-AnalysisLog $separator
+    Write-AnalysisLog "DÉBUT DE L'ANALYSE RECTOR"
+    Write-AnalysisLog $separator
+    Write-AnalysisLog "Projet: $ProjectPath"
+    Write-AnalysisLog "Configuration: $ConfigFile"
+    Write-AnalysisLog "Format de sortie: $OutputFormat"
+    Write-AnalysisLog "Mode Dry-Run: $DryRun"
+    Write-AnalysisLog "Utilisateur: $env:USERNAME"
+    Write-AnalysisLog "Machine: $env:COMPUTERNAME"
+    
+    # Extraire la version PHP cible depuis le nom du fichier de config
+    $phpVersion = Extract-PhpVersionFromConfig -ConfigFile $ConfigFile
+    if ($phpVersion) {
+        Write-AnalysisLog "Version PHP cible: $phpVersion"
+    }
+}
+
+function Extract-PhpVersionFromConfig {
+    <#
+    .SYNOPSIS
+        Extrait la version PHP cible depuis le nom du fichier de configuration
+    #>
+    param([string]$ConfigFile)
+    
+    if ($ConfigFile -match "php(\d+)") {
+        $version = $matches[1]
+        $major = $version.Substring(0, 1)
+        $minor = if ($version.Length -gt 1) { $version.Substring(1) } else { "0" }
+        return "$major.$minor"
+    }
+    
+    return $null
+}
+
+function Write-FilesAnalyzedLog {
+    <#
+    .SYNOPSIS
+        Log la liste des fichiers PHP analysés
+    #>
+    param(
+        [string]$ProjectPath,
+        [array]$PhpFiles
+    )
+    
+    $separator = "-" * 60
+    Write-AnalysisLog $separator
+    Write-AnalysisLog "FICHIERS PHP ANALYSÉS: $($PhpFiles.Count) fichiers"
+    Write-AnalysisLog $separator
+    
+    foreach ($file in $PhpFiles) {
+        $sizeKb = [math]::Round($file.Size / 1024, 2)
+        Write-AnalysisLog "  [SCAN] $($file.RelativePath) ($sizeKb KB)" -Level "DEBUG"
+    }
+    
+    # Résumé par dossier
+    $byFolder = $PhpFiles | Group-Object { Split-Path $_.RelativePath -Parent }
+    Write-AnalysisLog ""
+    Write-AnalysisLog "Répartition par dossier:"
+    foreach ($folder in $byFolder | Sort-Object Name) {
+        $folderName = if ($folder.Name -eq "") { "(racine)" } else { $folder.Name }
+        Write-AnalysisLog "  - $folderName : $($folder.Count) fichiers"
+    }
+}
+
+function Write-AnalysisResults {
+    <#
+    .SYNOPSIS
+        Log les résultats de l'analyse
+    #>
+    param(
+        [string]$JsonOutput,
+        [TimeSpan]$Duration,
+        [int]$TotalFiles
+    )
+    
+    try {
+        # Nettoyer et parser le JSON
+        $lines = $JsonOutput -split "`n"
+        $jsonStart = -1
+        
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            if ($lines[$i].TrimStart().StartsWith("{")) {
+                $jsonStart = $i
+                break
+            }
+        }
+        
+        if ($jsonStart -ge 0) {
+            $cleanJson = ($lines[$jsonStart..($lines.Count-1)] -join "`n").Trim()
+            $data = $cleanJson | ConvertFrom-Json -ErrorAction Stop
+            
+            $separator = "-" * 60
+            Write-AnalysisLog $separator
+            Write-AnalysisLog "RÉSULTATS DE L'ANALYSE"
+            Write-AnalysisLog $separator
+            
+            $changedFiles = if ($data.totals.changed_files) { $data.totals.changed_files } else { 0 }
+            $errors = if ($data.totals.errors) { $data.totals.errors } else { 0 }
+            
+            Write-AnalysisLog "Fichiers modifiés: $changedFiles / $TotalFiles"
+            Write-AnalysisLog "Erreurs détectées: $errors"
+            Write-AnalysisLog "Durée de l'analyse: $($Duration.TotalSeconds.ToString('F2')) secondes"
+            
+            # Log des règles appliquées
+            if ($data.file_diffs -and $data.file_diffs.Count -gt 0) {
+                Write-AnalysisLog ""
+                Write-AnalysisLog "Fichiers avec modifications suggérées:"
+                
+                $allRectors = @{}
+                
+                foreach ($file in $data.file_diffs) {
+                    $fileName = Split-Path $file.file -Leaf
+                    Write-AnalysisLog "  [MODIF] $fileName - $($file.applied_rectors.Count) règle(s)"
+                    
+                    foreach ($rector in $file.applied_rectors) {
+                        $rectorName = ($rector -split '\\')[-1]
+                        if ($allRectors.ContainsKey($rectorName)) {
+                            $allRectors[$rectorName]++
+                        } else {
+                            $allRectors[$rectorName] = 1
+                        }
+                    }
+                }
+                
+                # Résumé des règles appliquées
+                Write-AnalysisLog ""
+                Write-AnalysisLog "Règles Rector appliquées:"
+                foreach ($rector in $allRectors.GetEnumerator() | Sort-Object Value -Descending) {
+                    Write-AnalysisLog "  - $($rector.Key): $($rector.Value) occurrence(s)"
+                }
+            }
+            
+            return @{
+                ChangedFiles = $changedFiles
+                Errors = $errors
+                Duration = $Duration.TotalSeconds
+                RulesApplied = $allRectors.Keys.Count
+            }
+        }
+    } catch {
+        Write-AnalysisLog "Erreur lors du parsing des résultats: $($_.Exception.Message)" -Level "WARNING"
+    }
+    
+    return $null
+}
+
+function Write-AnalysisEnd {
+    <#
+    .SYNOPSIS
+        Log la fin de l'analyse
+    #>
+    param([string]$Status = "SUCCESS")
+    
+    $separator = "=" * 80
+    Write-AnalysisLog $separator
+    Write-AnalysisLog "FIN DE L'ANALYSE - Statut: $Status"
+    Write-AnalysisLog $separator
+    Write-AnalysisLog ""
+}
+
+function Save-AnalysisHistory {
+    <#
+    .SYNOPSIS
+        Sauvegarde l'analyse dans l'historique JSON
+    #>
+    param(
+        [string]$ProjectPath,
+        [string]$ConfigFile,
+        [hashtable]$Results,
+        [int]$TotalFiles,
+        [string]$Status
+    )
+    
+    try {
+        $history = Get-Content -Path $script:AnalysisHistoryFile -Raw | ConvertFrom-Json
+        
+        $phpVersion = Extract-PhpVersionFromConfig -ConfigFile $ConfigFile
+        
+        $entry = @{
+            id = [guid]::NewGuid().ToString()
+            timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
+            project = $ProjectPath
+            projectName = Split-Path $ProjectPath -Leaf
+            configFile = $ConfigFile
+            phpVersionTarget = $phpVersion
+            totalFilesScanned = $TotalFiles
+            changedFiles = if ($Results) { $Results.ChangedFiles } else { 0 }
+            errors = if ($Results) { $Results.Errors } else { 0 }
+            duration = if ($Results) { $Results.Duration } else { 0 }
+            rulesApplied = if ($Results) { $Results.RulesApplied } else { 0 }
+            status = $Status
+            user = $env:USERNAME
+            machine = $env:COMPUTERNAME
+        }
+        
+        # Ajouter à l'historique (garder les 100 dernières analyses)
+        $history.analyses = @($entry) + @($history.analyses) | Select-Object -First 100
+        
+        $history | ConvertTo-Json -Depth 10 | Set-Content -Path $script:AnalysisHistoryFile -Encoding UTF8
+        
+        Write-AnalysisLog "Analyse sauvegardée dans l'historique (ID: $($entry.id))"
+        
+    } catch {
+        Write-AnalysisLog "Erreur lors de la sauvegarde de l'historique: $($_.Exception.Message)" -Level "WARNING"
+    }
+}
+
+function Show-AnalysisHistory {
+    <#
+    .SYNOPSIS
+        Affiche l'historique des analyses
+    .PARAMETER Count
+        Nombre d'analyses à afficher
+    #>
+    param([int]$Count = 10)
+    
+    if (!(Test-Path $script:AnalysisHistoryFile)) {
+        Write-Host "Aucun historique disponible." -ForegroundColor Yellow
+        return
+    }
+    
+    try {
+        $history = Get-Content -Path $script:AnalysisHistoryFile -Raw | ConvertFrom-Json
+        
+        Write-Host ""
+        Write-Host "=" * 80 -ForegroundColor Cyan
+        Write-Host "  HISTORIQUE DES ANALYSES RECTOR (dernières $Count)" -ForegroundColor Cyan
+        Write-Host "=" * 80 -ForegroundColor Cyan
+        Write-Host ""
+        
+        $analyses = $history.analyses | Select-Object -First $Count
+        
+        foreach ($analysis in $analyses) {
+            $statusColor = if ($analysis.status -eq "SUCCESS") { "Green" } else { "Red" }
+            
+            Write-Host "  [$($analysis.timestamp)]" -ForegroundColor Gray -NoNewline
+            Write-Host " $($analysis.projectName)" -ForegroundColor White -NoNewline
+            Write-Host " → PHP $($analysis.phpVersionTarget)" -ForegroundColor Cyan -NoNewline
+            Write-Host " | $($analysis.totalFilesScanned) fichiers" -ForegroundColor Gray -NoNewline
+            Write-Host " | $($analysis.changedFiles) modifiés" -ForegroundColor Yellow -NoNewline
+            Write-Host " | $($analysis.status)" -ForegroundColor $statusColor
+        }
+        
+        Write-Host ""
+        Write-Host "  Fichier d'historique: $script:AnalysisHistoryFile" -ForegroundColor Gray
+        Write-Host ""
+        
+    } catch {
+        Write-Host "Erreur lors de la lecture de l'historique: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
 
 # =============================================================================
 # FONCTIONS UTILITAIRES
@@ -42,17 +420,26 @@ OPTIONS:
     -DryRun                 Mode dry-run (par defaut: true)
     -Interactive            Mode interactif (par defaut: true)
     -Help                   Affiche cette aide
+    -ShowHistory            Affiche l'historique des analyses
+    -HistoryCount <n>       Nombre d'analyses a afficher (defaut: 10)
+    -ShowLogs               Ouvre le fichier de logs
 
 EXEMPLES:
     .\rector-analyze.ps1
     .\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -OutputFormat detailed
     .\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -OutputFile "rapport.md" -DryRun:`$false
+    .\rector-analyze.ps1 -ShowHistory -HistoryCount 20
+    .\rector-analyze.ps1 -ShowLogs
 
 FORMATS DE SORTIE:
     simple     - Resume basique
     readable   - Rapport detaille lisible
     detailed   - Rapport exhaustif avec explications
     json       - Sortie JSON brute
+
+LOGS ET HISTORIQUE:
+    Les logs sont sauvegardes dans: logs/rector-analysis.log
+    L'historique JSON est dans: logs/analysis-history.json
 
 "@ -ForegroundColor Cyan
 }
@@ -298,12 +685,28 @@ function Run-RectorAnalysis {
     param(
         [string]$ProjectPath,
         [string]$ConfigFile,
-        [bool]$DryRun
+        [bool]$DryRun,
+        [string]$OutputFormat = "readable"
     )
     
+    # Initialiser le logging
+    Initialize-Logging
+    
+    # Démarrer le chrono
+    $startTime = Get-Date
+    
+    # Logger le début de l'analyse
+    Write-AnalysisStart -ProjectPath $ProjectPath -ConfigFile $ConfigFile -OutputFormat $OutputFormat -DryRun $DryRun
+    
+    # Récupérer et logger les fichiers PHP à analyser
+    $phpFiles = Get-PhpFilesInProject -ProjectPath $ProjectPath
+    Write-FilesAnalyzedLog -ProjectPath $ProjectPath -PhpFiles $phpFiles
+    
+    Write-Host ""
     Write-Host "Execution de l'analyse Rector..." -ForegroundColor Yellow
     Write-Host "Projet: $ProjectPath" -ForegroundColor Cyan
     Write-Host "Configuration: $ConfigFile" -ForegroundColor Cyan
+    Write-Host "Fichiers PHP détectés: $($phpFiles.Count)" -ForegroundColor Cyan
     Write-Host "Mode: $(if ($DryRun) { 'Dry-run (simulation)' } else { 'Application des changements' })" -ForegroundColor Cyan
     Write-Host ""
     
@@ -340,6 +743,7 @@ function Run-RectorAnalysis {
         # 4. Si aucun Rector trouvé, installer dans le projet d'exemples
         if (-not $rectorBin) {
             Write-Host "Rector non trouvé. Installation en cours..." -ForegroundColor Yellow
+            Write-AnalysisLog "Rector non trouvé - Installation en cours" -Level "WARNING"
             $installScript = Join-Path $PSScriptRoot "scripts\install-rector.ps1"
             if (Test-Path $installScript) {
                 & $installScript
@@ -350,9 +754,13 @@ function Run-RectorAnalysis {
             }
             
             if (-not $rectorBin) {
+                Write-AnalysisLog "Rector n'a pas pu être installé" -Level "ERROR"
+                Write-AnalysisEnd -Status "FAILED"
                 throw "Rector n'a pas pu être installé ou trouvé. Veuillez l'installer manuellement."
             }
         }
+        
+        Write-AnalysisLog "Rector trouvé: $rectorBin"
         
         # Préparer les arguments et les chemins
         $arguments = @("process", ".")  # Analyser le dossier courant
@@ -376,20 +784,36 @@ function Run-RectorAnalysis {
         Write-Host "Configuration: $configPath" -ForegroundColor Gray
         Write-Host ""
         
+        Write-AnalysisLog "Commande exécutée: $rectorBin $($arguments -join ' ')"
+        
         # Execution
         $output = & $rectorBin $arguments 2>&1
         $exitCode = $LASTEXITCODE
         
+        # Calculer la durée
+        $endTime = Get-Date
+        $duration = $endTime - $startTime
+        
+        # Logger les résultats
+        $results = Write-AnalysisResults -JsonOutput ($output -join "`n") -Duration $duration -TotalFiles $phpFiles.Count
+        
         if ($exitCode -eq 0) {
             Write-Host "Analyse terminee avec succes." -ForegroundColor Green
+            Write-AnalysisEnd -Status "SUCCESS"
+            Save-AnalysisHistory -ProjectPath $ProjectPath -ConfigFile $ConfigFile -Results $results -TotalFiles $phpFiles.Count -Status "SUCCESS"
             return $output -join "`n"
         } else {
             Write-Host "Analyse terminee avec des avertissements (code: $exitCode)." -ForegroundColor Yellow
+            Write-AnalysisEnd -Status "WARNING"
+            Save-AnalysisHistory -ProjectPath $ProjectPath -ConfigFile $ConfigFile -Results $results -TotalFiles $phpFiles.Count -Status "WARNING"
             return $output -join "`n"
         }
         
     } catch {
         Write-Host "Erreur lors de l'analyse: $($_.Exception.Message)" -ForegroundColor Red
+        Write-AnalysisLog "Erreur: $($_.Exception.Message)" -Level "ERROR"
+        Write-AnalysisEnd -Status "FAILED"
+        Save-AnalysisHistory -ProjectPath $ProjectPath -ConfigFile $ConfigFile -Results $null -TotalFiles $phpFiles.Count -Status "FAILED"
         throw
     } finally {
         Pop-Location
@@ -657,8 +1081,29 @@ class UserManager
 # SCRIPT PRINCIPAL
 # =============================================================================
 
+# Initialiser le logging dès le départ
+Initialize-Logging
+
 if ($Help) {
     Show-Help
+    exit 0
+}
+
+# Afficher l'historique si demandé
+if ($ShowHistory) {
+    Show-Header
+    Show-AnalysisHistory -Count $HistoryCount
+    exit 0
+}
+
+# Ouvrir les logs si demandé
+if ($ShowLogs) {
+    if (Test-Path $script:LogFile) {
+        Write-Host "Ouverture du fichier de logs: $script:LogFile" -ForegroundColor Green
+        Start-Process $script:LogFile
+    } else {
+        Write-Host "Aucun fichier de log trouvé. Lancez d'abord une analyse." -ForegroundColor Yellow
+    }
     exit 0
 }
 
@@ -667,6 +1112,53 @@ Show-Header
 if ($Interactive) {
     Write-Host "Mode interactif - Configuration de l'analyse" -ForegroundColor Cyan
     Write-Host ""
+    
+    # Option pour consulter l'historique
+    Write-Host "Que souhaitez-vous faire ?" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "1. Lancer une nouvelle analyse"
+    Write-Host "2. Consulter l'historique des analyses"
+    Write-Host "3. Ouvrir les fichiers de logs"
+    Write-Host "4. Quitter"
+    Write-Host ""
+    
+    $mainChoice = Read-Host "Votre choix (1-4)"
+    
+    switch ($mainChoice) {
+        "2" {
+            Show-AnalysisHistory -Count 15
+            Write-Host ""
+            $continue = Read-Host "Lancer une nouvelle analyse ? (o/N)"
+            if ($continue -ne "o" -and $continue -ne "O") {
+                exit 0
+            }
+            Write-Host ""
+        }
+        "3" {
+            Write-Host ""
+            Write-Host "Fichiers de logs disponibles:" -ForegroundColor Cyan
+            Write-Host "  1. Fichier de log principal: $script:LogFile"
+            Write-Host "  2. Historique JSON: $script:AnalysisHistoryFile"
+            Write-Host ""
+            $logChoice = Read-Host "Ouvrir quel fichier ? (1-2)"
+            
+            if ($logChoice -eq "1" -and (Test-Path $script:LogFile)) {
+                Start-Process $script:LogFile
+            } elseif ($logChoice -eq "2" -and (Test-Path $script:AnalysisHistoryFile)) {
+                Start-Process $script:AnalysisHistoryFile
+            } else {
+                Write-Host "Fichier non trouvé ou choix invalide." -ForegroundColor Red
+            }
+            exit 0
+        }
+        "4" {
+            Write-Host "Au revoir !" -ForegroundColor Green
+            exit 0
+        }
+        default {
+            # Continuer avec l'analyse (choix 1 ou autre)
+        }
+    }
     
     # Selection du projet
     $ProjectPath = Get-ProjectPath $ProjectPath

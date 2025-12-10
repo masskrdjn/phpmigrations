@@ -14,6 +14,7 @@ Complete documentation in English including:
 - 11 pre-configured migration paths
 - Step-by-step guides
 - VS Code integration
+- **📊 NEW: Analysis logging & history**
 
 ### 🇫🇷 **Français**
 **[📖 Documentation Française →](README-FR.md)**
@@ -24,6 +25,7 @@ Documentation complète en français incluant :
 - 11 chemins de migration pré-configurés
 - Guides étape par étape
 - Intégration VS Code
+- **📊 NOUVEAU : Logging et historique des analyses**
 
 ---
 
@@ -35,6 +37,27 @@ Documentation complète en français incluant :
 
 # Run interactive menu / Menu interactif
 .\rector-analyze.ps1
+
+# View analysis history / Consulter l'historique
+.\rector-analyze.ps1 -ShowHistory
+
+# Open logs / Ouvrir les logs
+.\rector-analyze.ps1 -ShowLogs
+```
+
+## ✨ New Features / Nouvelles fonctionnalités
+
+### 📊 Logging & History / Logging et Historique
+- **Analysis tracking**: Every analysis is logged with details
+- **Persistent history**: JSON history of last 100 analyses
+- **Log levels**: INFO, WARNING, ERROR, DEBUG
+- **Interactive menu**: New options to view history and logs
+
+### 📁 Log Files / Fichiers de logs
+```
+logs/
+├── rector-analysis.log      # Detailed text log
+└── analysis-history.json    # Structured JSON history
 ```
 
 ## 📊 Supported PHP Versions / Versions PHP supportées

@@ -166,6 +166,60 @@
             },
             "problemMatcher": [],
             "detail": "Utilise la configuration flexible personnalisable"
+        },
+        {
+            "label": "📜 Logs: Afficher l'historique",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ShowHistory -HistoryCount 20"
+            ],
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Affiche l'historique des 20 dernières analyses"
+        },
+        {
+            "label": "📝 Logs: Ouvrir le fichier de logs",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                ".\\rector-analyze.ps1 -ShowLogs"
+            ],
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Ouvre le fichier de logs rector-analysis.log"
+        },
+        {
+            "label": "📊 Logs: Ouvrir l'historique JSON",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "if (Test-Path '.\\logs\\analysis-history.json') { code '.\\logs\\analysis-history.json' } else { Write-Host 'Aucun historique disponible' -ForegroundColor Yellow }"
+            ],
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "detail": "Ouvre l'historique JSON des analyses dans VS Code"
         }
     ]
 }

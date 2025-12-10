@@ -1,0 +1,52 @@
+﻿{
+    "analyses":  [
+                     {
+                         "id":  "b14caae0-f33e-4d04-973f-ce032081e14a",
+                         "machine":  "DESKTOP-L7SNG22",
+                         "timestamp":  "2025-12-11T00:12:13",
+                         "changedFiles":  0,
+                         "errors":  0,
+                         "user":  "krazy",
+                         "project":  "C:\\laragon\\www\\migratepull\\phpmigrations\\scripts\\..\\examples\\sample-php-project",
+                         "rulesApplied":  0,
+                         "status":  "WARNING",
+                         "duration":  5.3997208,
+                         "configFile":  "C:\\laragon\\www\\phpmigrations\\config\\rector-php74.php",
+                         "phpVersionTarget":  "7.4",
+                         "projectName":  "sample-php-project",
+                         "totalFilesScanned":  10
+                     },
+                     {
+                         "id":  "1241c53b-832f-4983-b0cc-186b2bc46b08",
+                         "machine":  "DESKTOP-L7SNG22",
+                         "timestamp":  "2025-12-11T00:11:00",
+                         "changedFiles":  0,
+                         "errors":  0,
+                         "user":  "krazy",
+                         "project":  "C:\\laragon\\www\\phpmigrations\\examples\\sample-php-project",
+                         "rulesApplied":  0,
+                         "status":  "WARNING",
+                         "duration":  1.2255232,
+                         "configFile":  "C:\\laragon\\www\\phpmigrations\\config\\rector-php70.php",
+                         "phpVersionTarget":  "7.0",
+                         "projectName":  "sample-php-project",
+                         "totalFilesScanned":  10
+                     },
+                     {
+                         "id":  "f2674e25-e5c3-4011-aa4b-0cc8d0b54461",
+                         "machine":  "DESKTOP-L7SNG22",
+                         "timestamp":  "2025-12-11T00:07:08",
+                         "changedFiles":  0,
+                         "errors":  0,
+                         "user":  "krazy",
+                         "project":  "C:\\laragon\\www\\phpmigrations\\examples\\sample-php-project",
+                         "rulesApplied":  0,
+                         "status":  "WARNING",
+                         "duration":  5.1748709999999996,
+                         "configFile":  "C:\\laragon\\www\\phpmigrations\\config\\rector-php70.php",
+                         "phpVersionTarget":  "7.0",
+                         "projectName":  "sample-php-project",
+                         "totalFilesScanned":  10
+                     }
+                 ]
+}

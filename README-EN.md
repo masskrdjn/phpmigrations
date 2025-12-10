@@ -17,6 +17,9 @@ This project provides a suite of PowerShell tools to analyze and modernize your 
 - **Pre-defined configurations**: 11 supported PHP versions
 - **Progressive migration**: Step-by-step or direct
 - **Windows compatible**: Optimized for PowerShell 5.1+
+- **📊 Analysis logging**: Complete tracking of analyzed files
+- **📜 Analysis history**: Persistent JSON history of all analyses
+- **🔍 Detailed logs**: Logging with INFO/WARNING/ERROR levels
 
 ## 🚀 Quick installation
 
@@ -45,6 +48,9 @@ phpmigrations/
 ├── templates/        # Report templates
 ├── examples/         # Usage examples
 ├── docs/            # Detailed documentation
+├── logs/            # Analysis logs and history
+│   ├── rector-analysis.log      # Detailed log file
+│   └── analysis-history.json    # JSON history
 └── output/          # Generated reports
 ```
 
@@ -140,6 +146,60 @@ $rectorConfig->sets([
     LevelSetList::UP_TO_PHP_82,  // Your target version
     SetList::CODE_QUALITY,       // Rules according to your needs
 ]);
+```
+
+## 📊 Logging & History
+
+### View analysis history
+```powershell
+# Display last 10 analyses
+.\rector-analyze.ps1 -ShowHistory
+
+# Display last 20 analyses
+.\rector-analyze.ps1 -ShowHistory -HistoryCount 20
+```
+
+### Open log files
+```powershell
+# Open main log file
+.\rector-analyze.ps1 -ShowLogs
+```
+
+### Interactive menu
+The interactive menu now offers:
+1. **Launch a new analysis**
+2. **View analysis history**
+3. **Open log files**
+4. **Quit**
+
+### Information logged
+Each analysis records:
+- 📁 **Scanned files**: Complete list of PHP files analyzed
+- ⏱️ **Duration**: Analysis execution time
+- 🛠️ **Applied rules**: Rector rules used with occurrence count
+- 📈 **Results**: Modified files, detected errors
+- 👤 **Context**: User, machine, timestamp
+- 🎯 **Target version**: PHP version extracted from configuration
+
+### Log files
+```
+logs/
+├── rector-analysis.log      # Detailed text log (INFO/WARNING/ERROR)
+└── analysis-history.json    # Structured JSON history (last 100 analyses)
+```
+
+### History JSON example
+```json
+{
+  "id": "abc-123",
+  "timestamp": "2024-12-10T14:30:00",
+  "projectName": "my-project",
+  "phpVersionTarget": "8.1",
+  "totalFilesScanned": 45,
+  "changedFiles": 12,
+  "duration": 3.45,
+  "status": "SUCCESS"
+}
 ```
 
 ## 🎨 Report examples

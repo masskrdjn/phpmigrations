@@ -17,6 +17,9 @@ Ce projet fournit une suite d'outils PowerShell pour analyser et moderniser votr
 - **Configurations pré-définies** : 11 versions PHP supportées
 - **Migration progressive** : Étape par étape ou directe
 - **Compatible Windows** : Optimisé pour PowerShell 5.1+
+- **📊 Logging des analyses** : Suivi complet des fichiers analysés
+- **📜 Historique des analyses** : Historique JSON persistant de toutes les analyses
+- **🔍 Logs détaillés** : Journalisation avec niveaux INFO/WARNING/ERROR
 
 ## 🚀 Installation rapide
 
@@ -45,6 +48,9 @@ phpmigrations/
 ├── templates/        # Modèles de rapports
 ├── examples/         # Exemples d'utilisation
 ├── docs/            # Documentation détaillée
+├── logs/            # Logs et historique des analyses
+│   ├── rector-analysis.log      # Fichier de logs détaillé
+│   └── analysis-history.json    # Historique JSON
 └── output/          # Rapports générés
 ```
 
@@ -140,6 +146,60 @@ $rectorConfig->sets([
     LevelSetList::UP_TO_PHP_82,  // Votre version cible
     SetList::CODE_QUALITY,       // Règles selon vos besoins
 ]);
+```
+
+## 📊 Logging & Historique
+
+### Consulter l'historique des analyses
+```powershell
+# Afficher les 10 dernières analyses
+.\rector-analyze.ps1 -ShowHistory
+
+# Afficher les 20 dernières analyses
+.\rector-analyze.ps1 -ShowHistory -HistoryCount 20
+```
+
+### Ouvrir les fichiers de logs
+```powershell
+# Ouvrir le fichier de logs principal
+.\rector-analyze.ps1 -ShowLogs
+```
+
+### Menu interactif
+Le menu interactif propose maintenant :
+1. **Lancer une nouvelle analyse**
+2. **Consulter l'historique des analyses**
+3. **Ouvrir les fichiers de logs**
+4. **Quitter**
+
+### Informations loggées
+Chaque analyse enregistre :
+- 📁 **Fichiers scannés** : Liste complète des fichiers PHP analysés
+- ⏱️ **Durée** : Temps d'exécution de l'analyse
+- 🛠️ **Règles appliquées** : Règles Rector utilisées avec compteur d'occurrences
+- 📈 **Résultats** : Fichiers modifiés, erreurs détectées
+- 👤 **Contexte** : Utilisateur, machine, horodatage
+- 🎯 **Version cible** : Version PHP extraite de la configuration
+
+### Fichiers de logs
+```
+logs/
+├── rector-analysis.log      # Log textuel détaillé (INFO/WARNING/ERROR)
+└── analysis-history.json    # Historique JSON structuré (100 dernières analyses)
+```
+
+### Exemple d'historique JSON
+```json
+{
+  "id": "abc-123",
+  "timestamp": "2024-12-10T14:30:00",
+  "projectName": "mon-projet",
+  "phpVersionTarget": "8.1",
+  "totalFilesScanned": 45,
+  "changedFiles": 12,
+  "duration": 3.45,
+  "status": "SUCCESS"
+}
 ```
 
 ## 🎨 Exemples de rapports
