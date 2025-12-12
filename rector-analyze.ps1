@@ -26,6 +26,77 @@ $script:LogDirectory = Join-Path $PSScriptRoot "logs"
 $script:LogFile = Join-Path $script:LogDirectory "rector-analysis.log"
 $script:AnalysisHistoryFile = Join-Path $script:LogDirectory "analysis-history.json"
 
+# Variable globale pour le lecteur temporaire UNC
+$script:TempDriveLetter = $null
+$script:OriginalProjectPath = $null
+
+# =============================================================================
+# FONCTIONS DE GESTION UNC
+# =============================================================================
+
+function Use-UNCPath {
+    <#
+    .SYNOPSIS
+        Gère les chemins UNC en créant un lecteur temporaire si nécessaire
+    .DESCRIPTION
+        CMD.EXE ne supporte pas les chemins UNC comme répertoire courant.
+        Cette fonction crée un lecteur avec 'subst' pour contourner cette limitation.
+        Note: On utilise 'subst' au lieu de 'New-PSDrive' car subst crée un vrai
+        lecteur Windows visible par tous les processus (CMD, Composer, etc.)
+    #>
+    param([string]$Path)
+    
+    # Vérifier si c'est un chemin UNC (commence par \\ ou //)
+    if ($Path -match '^\\\\' -or $Path -match '^//') {
+        Write-Host "Chemin UNC détecté: $Path" -ForegroundColor Yellow
+        Write-Host "Création d'un lecteur temporaire..." -ForegroundColor Yellow
+        
+        # Trouver une lettre de lecteur disponible (de Z: à M:)
+        $availableLetters = @('Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M')
+        $usedLetters = (Get-PSDrive -PSProvider FileSystem).Name
+        
+        foreach ($letter in $availableLetters) {
+            if ($letter -notin $usedLetters) {
+                try {
+                    # Utiliser 'subst' pour créer un vrai lecteur Windows
+                    $driveLetter = "${letter}:"
+                    $null = & subst $driveLetter $Path 2>&1
+                    
+                    if ($LASTEXITCODE -eq 0 -or (Test-Path $driveLetter)) {
+                        $script:TempDriveLetter = $letter
+                        $script:OriginalProjectPath = $Path
+                        $newPath = "${letter}:\"
+                        Write-Host "Lecteur temporaire: $newPath -> $Path" -ForegroundColor Green
+                        return $newPath
+                    }
+                } catch {
+                    continue
+                }
+            }
+        }
+        
+        Write-Host "ATTENTION: Impossible de créer un lecteur temporaire." -ForegroundColor Red
+        return $Path
+    }
+    
+    return $Path
+}
+
+function Remove-TempDrive {
+    <#
+    .SYNOPSIS
+        Supprime le lecteur temporaire créé pour les chemins UNC
+    #>
+    if ($script:TempDriveLetter) {
+        try {
+            $driveLetter = "$($script:TempDriveLetter):"
+            $null = & subst /D $driveLetter 2>&1
+            Write-Host "Lecteur temporaire $driveLetter supprimé." -ForegroundColor Gray
+        } catch { }
+        $script:TempDriveLetter = $null
+    }
+}
+
 # =============================================================================
 # FONCTIONS DE LOGGING
 # =============================================================================
@@ -681,6 +752,147 @@ function Resolve-ConfigFile {
     return $ConfigFile
 }
 
+function New-DynamicRectorConfig {
+    <#
+    .SYNOPSIS
+        Génère une configuration Rector dynamique pour le projet analysé
+    .DESCRIPTION
+        Crée un fichier de configuration temporaire avec les chemins corrects
+        du projet à analyser, au lieu d'utiliser __DIR__ qui pointe ailleurs.
+    .PARAMETER ProjectPath
+        Chemin du projet à analyser
+    .PARAMETER BaseConfigFile
+        Fichier de configuration de base pour extraire les règles
+    .PARAMETER PhpVersion
+        Version PHP cible (81, 82, 84)
+    #>
+    param(
+        [string]$ProjectPath,
+        [string]$BaseConfigFile,
+        [string]$PhpVersion = "81"
+    )
+    
+    # Dossiers à exclure
+    $excludeDirs = @('vendor', 'cache', 'tmp', 'storage', 'node_modules', 'logs', 'sessions', 'var', '.git', '.gitlab', 'rector-output', 'rector-configs')
+    
+    # Détecter tous les dossiers contenant des fichiers .php
+    Write-Host "Scan des dossiers contenant des fichiers PHP..." -ForegroundColor Gray
+    $foundDirs = @()
+    
+    try {
+        $allSubDirs = Get-ChildItem -Path $ProjectPath -Directory -ErrorAction SilentlyContinue | Where-Object {
+            $_.Name -notin $excludeDirs -and -not $_.Name.StartsWith('.')
+        }
+        
+        foreach ($subDir in $allSubDirs) {
+            # Vérifier si ce dossier contient des fichiers PHP
+            $phpFiles = Get-ChildItem -Path $subDir.FullName -Filter "*.php" -File -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($phpFiles) {
+                $foundDirs += $subDir.Name
+            }
+        }
+    } catch {
+        Write-Host "Avertissement lors du scan: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+    
+    # Vérifier aussi les fichiers PHP à la racine
+    $rootPhpFiles = Get-ChildItem -Path $ProjectPath -Filter "*.php" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($rootPhpFiles) {
+        $foundDirs += '.'
+    }
+    
+    # Résumé
+    if ($foundDirs.Count -eq 0) {
+        Write-Host "Aucun fichier PHP trouvé, analyse de la racine par défaut..." -ForegroundColor Yellow
+        $foundDirs = @('.')
+    } else {
+        Write-Host "Dossiers PHP détectés ($($foundDirs.Count)): $($foundDirs -join ', ')" -ForegroundColor Cyan
+    }
+    
+    # Déterminer le LevelSetList selon la version PHP
+    $levelSet = switch ($PhpVersion) {
+        "74" { "LevelSetList::UP_TO_PHP_74" }
+        "80" { "LevelSetList::UP_TO_PHP_80" }
+        "81" { "LevelSetList::UP_TO_PHP_81" }
+        "82" { "LevelSetList::UP_TO_PHP_82" }
+        "83" { "LevelSetList::UP_TO_PHP_83" }
+        "84" { "LevelSetList::UP_TO_PHP_84" }
+        default { "LevelSetList::UP_TO_PHP_81" }
+    }
+    
+    $phpVersionConst = switch ($PhpVersion) {
+        "74" { "PHP_74" }
+        "80" { "PHP_80" }
+        "81" { "PHP_81" }
+        "82" { "PHP_82" }
+        "83" { "PHP_83" }
+        "84" { "PHP_84" }
+        default { "PHP_81" }
+    }
+    
+    # Générer les chemins PHP
+    $pathsPhp = ($foundDirs | ForEach-Object { "        `$projectRoot . '/$_'" }) -join ",`n"
+    $skipsPhp = ($excludeDirs | ForEach-Object { "        `$projectRoot . '/$_'" }) -join ",`n"
+    
+    # Créer le contenu de la configuration
+    $configContent = @"
+<?php
+
+declare(strict_types=1);
+
+use Rector\Config\RectorConfig;
+use Rector\Set\ValueObject\LevelSetList;
+use Rector\Set\ValueObject\SetList;
+
+/**
+ * Configuration Rector générée dynamiquement
+ * Projet: $ProjectPath
+ * Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+ */
+return static function (RectorConfig `$rectorConfig): void {
+    // Chemin racine du projet (passé via --working-dir ou getcwd)
+    `$projectRoot = getcwd();
+    
+    `$rectorConfig->paths([
+$pathsPhp
+    ]);
+
+    // Migration vers PHP $PhpVersion
+    `$rectorConfig->sets([
+        $levelSet,
+        SetList::CODE_QUALITY,
+        SetList::DEAD_CODE,
+        SetList::EARLY_RETURN,
+        SetList::TYPE_DECLARATION,
+    ]);
+
+    // Exclusions
+    `$rectorConfig->skip([
+$skipsPhp
+    ]);
+
+    // Parallel processing
+    `$rectorConfig->parallel();
+};
+"@
+
+    # Créer le fichier temporaire
+    $tempDir = Join-Path $PSScriptRoot "temp"
+    if (!(Test-Path $tempDir)) {
+        New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+    }
+    
+    $tempConfigFile = Join-Path $tempDir "rector-dynamic-php$PhpVersion.php"
+    # Écrire en UTF-8 SANS BOM (requis pour PHP strict_types)
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($tempConfigFile, $configContent, $utf8NoBom)
+    
+    Write-Host "Configuration dynamique générée: $tempConfigFile" -ForegroundColor Green
+    Write-AnalysisLog "Configuration dynamique créée pour $($foundDirs.Count) dossiers"
+    
+    return $tempConfigFile
+}
+
 function Run-RectorAnalysis {
     param(
         [string]$ProjectPath,
@@ -710,7 +922,10 @@ function Run-RectorAnalysis {
     Write-Host "Mode: $(if ($DryRun) { 'Dry-run (simulation)' } else { 'Application des changements' })" -ForegroundColor Cyan
     Write-Host ""
     
-    Push-Location $ProjectPath
+    # Gérer les chemins UNC (WSL, partages réseau)
+    $workingPath = Use-UNCPath -Path $ProjectPath
+    
+    Push-Location $workingPath
     try {
         # Construction de la commande - Chercher Rector dans plusieurs emplacements
         $rectorBin = $null
@@ -722,7 +937,20 @@ function Run-RectorAnalysis {
             $rectorBin = "vendor\bin\rector"
         }
         
-        # 2. Dans le projet d'exemples (fallback)
+        # 2. Dans le dossier phpmigrations (où le script est installé)
+        if (-not $rectorBin) {
+            $localRector = Join-Path $PSScriptRoot "vendor\bin\rector"
+            $localRectorBat = Join-Path $PSScriptRoot "vendor\bin\rector.bat"
+            if (Test-Path $localRectorBat) {
+                $rectorBin = $localRectorBat
+                Write-Host "Rector trouvé dans phpmigrations" -ForegroundColor Green
+            } elseif (Test-Path $localRector) {
+                $rectorBin = $localRector
+                Write-Host "Rector trouvé dans phpmigrations" -ForegroundColor Green
+            }
+        }
+        
+        # 3. Dans le projet d'exemples (fallback)
         if (-not $rectorBin) {
             $exampleProject = Join-Path $PSScriptRoot "examples\sample-php-project"
             if (Test-Path (Join-Path $exampleProject "vendor\bin\rector.bat")) {
@@ -746,10 +974,17 @@ function Run-RectorAnalysis {
             Write-AnalysisLog "Rector non trouvé - Installation en cours" -Level "WARNING"
             $installScript = Join-Path $PSScriptRoot "scripts\install-rector.ps1"
             if (Test-Path $installScript) {
-                & $installScript
-                $exampleProject = Join-Path $PSScriptRoot "examples\sample-php-project"
-                if (Test-Path (Join-Path $exampleProject "vendor\bin\rector.bat")) {
-                    $rectorBin = Join-Path $exampleProject "vendor\bin\rector.bat"
+                & $installScript -ProjectPath $workingPath
+                # Revérifier après l'installation
+                if (Test-Path "vendor\bin\rector.bat") {
+                    $rectorBin = "vendor\bin\rector.bat"
+                } elseif (Test-Path "vendor\bin\rector") {
+                    $rectorBin = "vendor\bin\rector"
+                } else {
+                    $exampleProject = Join-Path $PSScriptRoot "examples\sample-php-project"
+                    if (Test-Path (Join-Path $exampleProject "vendor\bin\rector.bat")) {
+                        $rectorBin = Join-Path $exampleProject "vendor\bin\rector.bat"
+                    }
                 }
             }
             
@@ -768,15 +1003,15 @@ function Run-RectorAnalysis {
             $arguments += "--dry-run"
         }
         
-        # Utiliser le chemin de configuration (déjà résolu par Resolve-ConfigFile)
-        $configPath = $ConfigFile
-        # Si le chemin n'est pas absolu, essayer de le résoudre
-        if (-not ([System.IO.Path]::IsPathRooted($configPath))) {
-            $resolvedPath = Resolve-ConfigFile -ConfigFile $ConfigFile -ProjectPath $ProjectPath
-            if (Test-Path $resolvedPath -PathType Leaf) {
-                $configPath = $resolvedPath
-            }
+        # Extraire la version PHP depuis le nom du fichier de config
+        $phpVersion = "81"  # Par défaut
+        if ($ConfigFile -match "php(\d+)") {
+            $phpVersion = $matches[1]
         }
+        
+        # Générer une configuration dynamique avec les bons chemins
+        $dynamicConfig = New-DynamicRectorConfig -ProjectPath $ProjectPath -BaseConfigFile $ConfigFile -PhpVersion $phpVersion
+        $configPath = $dynamicConfig
         
         $arguments += @("--output-format=json", "--config=$configPath")
         
@@ -817,6 +1052,7 @@ function Run-RectorAnalysis {
         throw
     } finally {
         Pop-Location
+        Remove-TempDrive
     }
 }
 

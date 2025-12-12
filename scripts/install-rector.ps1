@@ -9,6 +9,71 @@ param(
     [switch]$Help = $false
 )
 
+# Variable globale pour le lecteur temporaire
+$script:TempDriveLetter = $null
+$script:OriginalProjectPath = $null
+
+function Use-UNCPath {
+    <#
+    .SYNOPSIS
+        Gère les chemins UNC en créant un lecteur temporaire si nécessaire
+    .DESCRIPTION
+        CMD.EXE ne supporte pas les chemins UNC comme répertoire courant.
+        Cette fonction crée un lecteur avec 'subst' pour contourner cette limitation.
+    #>
+    param([string]$Path)
+    
+    # Vérifier si c'est un chemin UNC (commence par \\ ou //)
+    if ($Path -match '^\\\\' -or $Path -match '^//') {
+        Write-Host "Chemin UNC détecté: $Path" -ForegroundColor Yellow
+        Write-Host "Création d'un lecteur temporaire..." -ForegroundColor Yellow
+        
+        # Trouver une lettre de lecteur disponible (de Z: à M:)
+        $availableLetters = @('Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M')
+        $usedLetters = (Get-PSDrive -PSProvider FileSystem).Name
+        
+        foreach ($letter in $availableLetters) {
+            if ($letter -notin $usedLetters) {
+                try {
+                    # Utiliser 'subst' pour créer un vrai lecteur Windows
+                    $driveLetter = "${letter}:"
+                    $null = & subst $driveLetter $Path 2>&1
+                    
+                    if ($LASTEXITCODE -eq 0 -or (Test-Path $driveLetter)) {
+                        $script:TempDriveLetter = $letter
+                        $script:OriginalProjectPath = $Path
+                        $newPath = "${letter}:\"
+                        Write-Host "Lecteur temporaire: $newPath -> $Path" -ForegroundColor Green
+                        return $newPath
+                    }
+                } catch {
+                    continue
+                }
+            }
+        }
+        
+        Write-Host "ATTENTION: Impossible de créer un lecteur temporaire." -ForegroundColor Red
+        return $Path
+    }
+    
+    return $Path
+}
+
+function Remove-TempDrive {
+    <#
+    .SYNOPSIS
+        Supprime le lecteur temporaire créé pour les chemins UNC
+    #>
+    if ($script:TempDriveLetter) {
+        try {
+            $driveLetter = "$($script:TempDriveLetter):"
+            $null = & subst /D $driveLetter 2>&1
+            Write-Host "Lecteur temporaire $driveLetter supprimé." -ForegroundColor Gray
+        } catch { }
+        $script:TempDriveLetter = $null
+    }
+}
+
 # Affichage de l'aide
 if ($Help) {
     Write-Host @"
@@ -101,7 +166,10 @@ if ($Global) {
     Write-Host "Installation globale de Rector..."
     composer global require rector/rector --with-all-dependencies
 } else {
-    Push-Location $ProjectPath
+    # Gérer les chemins UNC (WSL, partages réseau)
+    $workingPath = Use-UNCPath -Path $ProjectPath
+    
+    Push-Location $workingPath
     try {
         # Verification si composer.json existe
         if (!(Test-Path "composer.json")) {
@@ -119,9 +187,11 @@ if ($Global) {
         Write-Host "Rector installe avec succes dans le projet." -ForegroundColor Green
     } catch {
         Write-Host "Erreur lors de l'installation: $($_.Exception.Message)" -ForegroundColor Red
+        Remove-TempDrive
         exit 1
     } finally {
         Pop-Location
+        Remove-TempDrive
     }
 }
 
