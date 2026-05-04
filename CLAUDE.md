@@ -90,7 +90,7 @@ When editing this logic, preserve the fallback chain — users frequently analyz
 
 ### Config files
 
-[config/](config/) holds `rector-php{56,70,71,72,73,74,80,81,82,83,84}.php`, plus `rector-flexible.php` and `rector-legacy-to-modern.php`. Each sets a `LevelSetList::UP_TO_PHP_XX` plus a curated `SetList::*` mix. The naming convention `rector-php<NN>.php` is **load-bearing**: `Extract-PhpVersionFromConfig` parses the version out of the filename (`php(\d+)` regex) for the history JSON's `phpVersionTarget` field.
+[config/](config/) holds `rector-php{56,70,71,72,73,74,80,81,82,83,84}.php`, plus `rector-customizable.php` and `rector-old-code-to-php84.php`. Each sets a `LevelSetList::UP_TO_PHP_XX` plus a curated `SetList::*` mix. The naming convention `rector-php<NN>.php` is **load-bearing**: `Extract-PhpVersionFromConfig` parses the version out of the filename (`php(\d+)` regex) for the history JSON's `phpVersionTarget` field.
 
 ### Logs & history
 

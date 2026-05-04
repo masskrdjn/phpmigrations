@@ -1,69 +1,77 @@
-# Tests Unitaires / Unit Tests
+# Unit Tests
 
-Ce dossier contient les tests unitaires pour le projet de migrations PHP.
+Ce dossier contient les tests PHPUnit du projet `phpmigrations`.
 
-This folder contains unit tests for the PHP migrations project.
+The tests verify the behavior of the PowerShell analyzer, especially how `rector-analyze.ps1` reports failures in temporary PHP projects.
 
-## Installation / Installation
+## Installation
 
-1. Installer les dépendances avec Composer :
-   Install dependencies with Composer:
+Depuis ce dossier :
 
-   ```bash
-   composer install
-   ```
+```bash
+composer install
+```
 
-## Exécution des tests / Running Tests
+Les tests utilisent des fonctions PHP modernes comme `str_contains()`, donc PHP 8.0+ est recommandé pour les lancer.
 
-### Via Composer / Using Composer
+## Running Tests
+
+Depuis la racine du dépôt :
+
+```powershell
+.\run_unit_tests.bat
+```
+
+Ou directement depuis `unit_tests/` :
 
 ```bash
 composer test
 ```
 
-### Via PHPUnit directement / Using PHPUnit directly
+Equivalent PHPUnit direct call:
 
 ```bash
 ./vendor/bin/phpunit
 ```
 
-## Description des tests / Test Description
+On Windows, this may also be:
 
-### MigrationFailureTest
-
-Ce test vérifie que les migrations Rector échouent correctement lorsqu'elles rencontrent du code incompatible ou avec des erreurs.
-
-This test verifies that Rector migrations fail properly when encountering incompatible code or errors.
-
-#### testMigrationFailsOnSyntaxError
-
-- **Objectif** : Vérifier qu'une migration échoue sur du code avec une erreur de syntaxe
-- **Code testé** : Fichier PHP avec un point-virgule manquant
-- **Attendu** : Rector doit détecter l'erreur de parsing et la signaler
-
-#### testMigrationFailsOnDeprecatedFeature
-
-- **Objectif** : Vérifier qu'une migration détecte les fonctionnalités dépréciées
-- **Code testé** : Utilisation de `create_function()` (supprimée en PHP 8.0)
-- **Attendu** : Rector doit signaler l'utilisation de la fonctionnalité dépréciée
-
-## Structure des fichiers / File Structure
-
+```powershell
+.\vendor\bin\phpunit.bat
 ```
+
+## Test Suite
+
+### `MigrationFailureTest`
+
+This suite creates isolated temporary PHP projects, runs the repository-level `rector-analyze.ps1` script with:
+
+```powershell
+-Interactive:$false -OutputFormat simple
+```
+
+and checks that failures or compatibility issues are visible in the combined stdout/stderr output.
+
+Current tests:
+
+| Test | Purpose |
+| --- | --- |
+| `testMigrationFailsOnSyntaxError` | Verifies that invalid PHP syntax is reported as an error. |
+| `testMigrationDetectsDeprecatedCreateFunction` | Verifies that `create_function()` is detected or produces a Rector warning/error when targeting PHP 8.4. |
+
+## Structure
+
+```text
 unit_tests/
-├── composer.json          # Configuration Composer
-├── phpunit.xml           # Configuration PHPUnit
-├── tests/
-│   └── MigrationFailureTest.php  # Tests de migration qui échouent
-└── README.md             # Ce fichier
+  composer.json
+  phpunit.xml
+  README.md
+  tests/
+    MigrationFailureTest.php
 ```
 
-## Notes importantes / Important Notes
+## Notes
 
-- Les tests utilisent des fichiers temporaires pour éviter de modifier le code source
-- Les tests sont exécutés en mode dry-run pour ne pas appliquer les changements
-- Assurez-vous que Rector est installé et configuré avant de lancer les tests
-
-- Tests use temporary files to avoid modifying source code
-- Tests run in dry-run mode to not apply changes
-- Make sure Rector is installed and configured before running tests
+- Temporary projects are created under the system temp directory and removed after each test.
+- Rector is executed in dry-run mode by default through `rector-analyze.ps1`.
+- The tests assume `php` 8.0+, `composer`, PowerShell, and the project-level Rector setup are available.

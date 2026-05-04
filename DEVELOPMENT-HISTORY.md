@@ -1,4 +1,4 @@
-﻿# Historique de développement - Rector PHP Analysis Tools
+# Historique de développement - Rector PHP Analysis Tools
 
 > **Documentation complète du processus de création et développement du projet**
 
@@ -83,19 +83,19 @@
 - Optimisations spécifiques par version
 
 #### `config/rector-php56.php`
-- Support des projets legacy PHP 5.6
+- Support des projets PHP 5.6 anciens
 - Migration sécurisée vers versions modernes
 - Base pour modernisation complète
 
-#### `config/rector-flexible.php`
+#### `config/rector-customizable.php`
 - Configuration adaptable et personnalisable
 - Commentaires explicatifs pour modification
 - Template pour configurations custom
 
-#### `config/rector-legacy-to-modern.php`
+#### `config/rector-old-code-to-php84.php`
 - Migration complète en une seule étape
 - Optimisé pour les projets très anciens
-- Exclusions spéciales pour code legacy
+- Exclusions spéciales pour vieux code
 
 ## 🎯 Défis techniques résolus
 

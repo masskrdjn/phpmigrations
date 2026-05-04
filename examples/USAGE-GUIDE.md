@@ -14,7 +14,7 @@ This guide explains how to use the code examples to test all Rector migration fe
 ```
 examples/php-versions/
 ├── README.md                    # Guide principal / Main guide
-├── php56/                       # PHP 5.6 legacy code
+├── php56/                       # Old PHP 5.6 code
 │   └── legacy-code.php         # Code hérité typique
 ├── php70/                       # PHP 7.0 modern features  
 │   └── modern-code.php         # Fonctionnalités modernes
@@ -31,7 +31,7 @@ examples/php-versions/
 └── migration-tests/             # Scripts de test automatisés
     ├── README.md               # Guide des tests
     ├── test-php56-to-70.ps1    # Test migration 5.6→7.0
-    ├── test-legacy-to-modern.ps1 # Test migration complète
+    ├── test-old-code-to-php84.ps1 # Test migration complète
     └── run-all-tests.ps1       # Lance tous les tests
 ```
 
@@ -55,7 +55,7 @@ Launch the interactive menu to explore all options:
 2. Utilisez `Ctrl+Shift+P` → "Tasks: Run Task"
 3. Sélectionnez un test :
    - 🧪 Test: Migration PHP 5.6 → 7.0
-   - 🚀 Test: Migration Legacy → Modern  
+   - 🚀 Test: Migration Old Code → PHP 8.4
    - 🧪 Test: Tous les Tests de Migration
 
 #### Via PowerShell / Using PowerShell
@@ -65,7 +65,7 @@ Launch the interactive menu to explore all options:
 .\examples\php-versions\migration-tests\test-php56-to-70.ps1 -DryRun
 
 # Test de migration complète
-.\examples\php-versions\migration-tests\test-legacy-to-modern.ps1 -DryRun -SourceVersion php56
+.\examples\php-versions\migration-tests\test-old-code-to-php84.ps1 -DryRun -SourceVersion php56
 
 # Tous les tests avec rapport détaillé
 .\examples\php-versions\migration-tests\run-all-tests.ps1 -DryRun -Verbose
@@ -101,10 +101,10 @@ Test direct migration to modern version:
 
 ```powershell
 # PHP 5.6 → PHP 8.4 (saut direct)
-.\rector-analyze.ps1 -ProjectPath "examples\php-versions\php56" -ConfigFile "config\rector-legacy-to-modern.php" -DryRun:$true
+.\rector-analyze.ps1 -ProjectPath "examples\php-versions\php56" -ConfigFile "config\rector-old-code-to-php84.php" -DryRun:$true
 
 # Configuration flexible
-.\rector-analyze.ps1 -ProjectPath "examples\php-versions\php70" -ConfigFile "config\rector-flexible.php" -DryRun:$true
+.\rector-analyze.ps1 -ProjectPath "examples\php-versions\php70" -ConfigFile "config\rector-customizable.php" -DryRun:$true
 ```
 
 ## 📊 Types de tests disponibles / Available Test Types
@@ -115,8 +115,8 @@ Test direct migration to modern version:
 |---------------------------|--------|--------|-------------------|
 | **Array syntax** | `array()` | `[]` | `test-php56-to-70.ps1` |
 | **Null coalescing** | `isset()` | `??` | `test-php56-to-70.ps1` |
-| **Arrow functions** | `function()` | `fn()` | `test-legacy-to-modern.ps1` |
-| **Match expressions** | `switch` | `match` | `test-legacy-to-modern.ps1` |
+| **Arrow functions** | `function()` | `fn()` | `test-old-code-to-php84.ps1` |
+| **Match expressions** | `switch` | `match` | `test-old-code-to-php84.ps1` |
 
 ### 2. Tests de Types / Type Tests
 
@@ -185,13 +185,13 @@ output/
 
 ### Configurations personnalisées / Custom Configurations
 
-Utilisez `rector-flexible.php` comme base pour vos propres configurations :
+Utilisez `rector-customizable.php` comme base pour vos propres configurations :
 
-Use `rector-flexible.php` as a base for your own configurations:
+Use `rector-customizable.php` as a base for your own configurations:
 
 ```powershell
 # Copiez la configuration flexible
-cp config\rector-flexible.php config\my-custom-config.php
+cp config\rector-customizable.php config\my-custom-config.php
 
 # Modifiez selon vos besoins
 # Edit according to your needs
@@ -206,7 +206,7 @@ cp config\rector-flexible.php config\my-custom-config.php
 
 - [ ] **Migration PHP 5.6 → 7.0** : Modernisation de base
 - [ ] **Migration PHP 7.4 → 8.1** : Transition moderne  
-- [ ] **Migration Legacy → Modern** : Saut complet
+- [ ] **Migration Old Code → PHP 8.4** : Saut complet
 - [ ] **Configuration flexible** : Personnalisation
 
 ### Tests Avancés / Advanced Tests

@@ -1,257 +1,189 @@
 # Rector PHP Analysis Tools
 
-> **Outils d'analyse et de modernisation PHP avec Rector - Scripts PowerShell pour rapports lisibles**
-> **✨ Nouveau : Support de migration depuis toutes les versions PHP principales !**
+Outils PowerShell pour analyser et moderniser des projets PHP avec [Rector](https://github.com/rectorphp/rector).
 
-## 🎯 Vue d'ensemble
+Le point d'entrée principal est `rector-analyze.ps1`. Il peut tourner en mode interactif ou en ligne de commande, générer une configuration Rector temporaire selon la version PHP cible, transformer la sortie JSON de Rector en rapports lisibles, et conserver les logs/historiques d'analyse.
 
-Ce projet fournit une suite d'outils PowerShell pour analyser et moderniser votre code PHP avec [Rector](https://github.com/rectorphp/rector). Il transforme la sortie JSON brute de Rector en rapports lisibles et exploitables, et supporte maintenant la migration depuis **toutes les versions PHP principales** (5.6 → 8.4).
+## Fonctionnalités
 
-## ✨ Fonctionnalités
+- Analyse Rector en dry-run par défaut.
+- Versions PHP cibles de `7.0` à `8.4` via `-PhpVersion`.
+- Génération dynamique de configuration Rector selon la structure du projet.
+- Utilisation possible d'un fichier Rector existant avec `-UseRawConfig`.
+- Ajout de sets Rector comme `CODE_QUALITY`, `DEAD_CODE`, `TYPE_DECLARATION`, etc.
+- Rapports `simple`, `readable`, `detailed` ou `json`.
+- Logs, historique et préférences utilisateur dans `logs/`.
+- Gestion des chemins locaux et UNC/réseau sous Windows.
+- Tests unitaires autour de la détection d'erreurs de `rector-analyze.ps1`.
 
-- **Migration multi-versions** : PHP 5.6, 7.x, 8.x → version moderne
-- **Analyse automatique** : Scan complet de votre code PHP
-- **Rapports lisibles** : Conversion JSON → Markdown/HTML
-- **Multiple formats** : Simple, détaillé, ou sur-mesure
-- **Interface interactive** : Menu PowerShell intuitif
-- **Configurations pré-définies** : 11 versions PHP supportées
-- **Migration progressive** : Étape par étape ou directe
-- **Compatible Windows** : Optimisé pour PowerShell 5.1+
-- **📊 Logging des analyses** : Suivi complet des fichiers analysés
-- **📜 Historique des analyses** : Historique JSON persistant de toutes les analyses
-- **🔍 Logs détaillés** : Journalisation avec niveaux INFO/WARNING/ERROR
+## Prérequis
 
-## 🚀 Installation rapide
+- Windows avec PowerShell 5.1 ou plus récent
+- PHP 7.4+ recommandé
+- Composer
+- Git, pour cloner et contribuer
 
-1. **Cloner le projet**
-   ```powershell
-   git clone [URL_DU_REPO]
-   cd phpmigrations
-   ```
+## Démarrage rapide
 
-2. **Installer Rector**
-   ```powershell
-   .\scripts\install-rector.ps1
-   ```
-
-3. **Premier scan**
-   ```powershell
-   .\rector-analyze.ps1
-   ```
-
-## 📁 Structure du projet
-
-```
-phpmigrations/
-├── scripts/           # Scripts PowerShell principaux
-├── config/           # Configurations Rector
-├── templates/        # Modèles de rapports
-├── examples/         # Exemples d'utilisation
-├── docs/            # Documentation détaillée
-├── logs/            # Logs et historique des analyses
-│   ├── rector-analysis.log      # Fichier de logs détaillé
-│   └── analysis-history.json    # Historique JSON
-└── output/          # Rapports générés
-```
-
-## 🔧 Scripts disponibles
-
-| Script | Description | Usage |
-|--------|-------------|-------|
-| `rector-analyze.ps1` | **Menu principal** | Interface interactive |
-| `analyze-rector-simple.ps1` | Rapport basique | Résumé rapide |
-| `analyze-rector-readable.ps1` | Rapport détaillé | Analyse complète |
-| `analyze-rector-detailed.ps1` | Rapport exhaustif | Avec explications |
-
-## 🎯 Versions PHP supportées
-
-| Version Source | Version Cible | Configuration | Complexité |
-|----------------|---------------|---------------|------------|
-| **PHP 5.6** | PHP 7.0+ | `rector-php70.php` | ⭐⭐⭐ |
-| **PHP 7.0** | PHP 7.4+ | `rector-php74.php` | ⭐⭐ |
-| **PHP 7.4** | PHP 8.0+ | `rector-php80.php` | ⭐⭐ |
-| **PHP 8.0** | PHP 8.1+ | `rector-php81.php` | ⭐ |
-| **PHP 8.1** | PHP 8.2+ | `rector-php82.php` | ⭐ |
-| **PHP 8.2** | PHP 8.3+ | `rector-php83.php` | ⭐ |
-| **PHP 8.3** | PHP 8.4 | `rector-php84.php` | ⭐ |
-| **Legacy** | Moderne | `rector-legacy-to-modern.php` | ⭐⭐⭐⭐ |
-
-## 📖 Guide d'utilisation
-
-### Interface interactive
 ```powershell
-# Menu interactif - choisissez votre configuration
+git clone [URL_DU_REPO]
+cd phpmigrations
+
+# Installer Rector dans le projet à analyser, ou utiliser l'exemple fourni.
+.\scripts\install-rector.ps1
+
+# Lancer l'assistant interactif.
 .\rector-analyze.ps1
 ```
 
-### Migration spécifique (projets simples)
+Exécution non interactive :
+
 ```powershell
-# PHP 7.4 → PHP 8.1
-.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector-php81.php"
-
-# Legacy → Moderne (migration directe)
-.\rector-analyze.ps1 -ProjectPath "C:\ancien\projet" -ConfigFile "rector-legacy-to-modern.php"
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 84 -Interactive:$false -OutputFormat readable
 ```
 
-### Migration par étapes (recommandée pour projets complexes)
+Appliquer les changements au lieu de simuler :
+
 ```powershell
-# Étape 1 : PHP ancien → PHP 7.4
-.\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php74.php"
-
-# Étape 2 : PHP 7.4 → PHP 8.1  
-.\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php81.php"
-
-# Étape 3 : PHP 8.1 → PHP 8.4
-.\rector-analyze.ps1 -ProjectPath "C:\projet" -ConfigFile "rector-php84.php"
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 84 -DryRun:$false
 ```
 
-## ⚙️ Configuration
+À utiliser seulement après avoir relu le dry-run et vérifié que le projet cible est versionné.
 
-### Configurations pré-définies
-Le projet inclut 11 configurations prêtes à l'emploi :
+## Commandes principales
 
+| Commande | Rôle |
+| --- | --- |
+| `.\rector-analyze.ps1` | Assistant interactif |
+| `.\rector-analyze.ps1 -Help` | Afficher toutes les options |
+| `.\rector-analyze.ps1 -ShowHistory` | Voir les analyses récentes |
+| `.\rector-analyze.ps1 -ShowLogs` | Ouvrir le fichier de log principal |
+| `.\scripts\install-rector.ps1` | Installer Rector et copier des configs de départ |
+| `.\run_unit_tests.bat` | Lancer les tests PHPUnit dans `unit_tests/` |
+
+Options utiles :
+
+| Option | Description |
+| --- | --- |
+| `-ProjectPath` | Projet PHP à analyser |
+| `-PhpVersion` | Version cible : `70`, `71`, `72`, `73`, `74`, `80`, `81`, `82`, `83`, `84` |
+| `-ExtraSets` | Sets Rector additionnels, par exemple `CODE_QUALITY,DEAD_CODE` |
+| `-OutputFormat` | `simple`, `readable`, `detailed` ou `json` |
+| `-OutputFile` | Fichier de sauvegarde du rapport |
+| `-DryRun:$false` | Appliquer les changements Rector |
+| `-ConfigFile` + `-UseRawConfig` | Utiliser une configuration Rector existante telle quelle |
+
+## Menu interactif
+
+L'assistant permet de :
+
+1. Lancer une nouvelle analyse.
+2. Rejouer une analyse récente.
+3. Consulter l'historique des analyses.
+4. Ouvrir les fichiers de logs/historique.
+5. Quitter.
+
+Il mémorise aussi le dernier projet, la version PHP cible, les sets sélectionnés et le format de sortie dans `logs/user-settings.json`.
+
+## Structure du projet
+
+```text
+phpmigrations/
+  rector-analyze.ps1              Analyseur principal et assistant interactif
+  analyze-rector-readable.ps1     Formatteur Markdown lisible groupé
+  analyze-rector-detailed.ps1     Formatteur détaillé par règle
+  scripts/
+    install-rector.ps1            Assistant d'installation de Rector
+  config/                         Configurations Rector fournies
+  docs/                           Guides complémentaires
+  examples/                       Exemples de projets et migrations
+  failing_tests/                  Fixtures manuelles d'échec
+  unit_tests/                     Tests PHPUnit du comportement des scripts
+  logs/                           Logs, historique, préférences
+  temp/                           Configurations temporaires générées
 ```
-config/
-├── rector-php56.php      # Migration vers PHP 5.6
-├── rector-php70.php      # Migration vers PHP 7.0  
-├── rector-php71.php      # Migration vers PHP 7.1
-├── rector-php72.php      # Migration vers PHP 7.2
-├── rector-php73.php      # Migration vers PHP 7.3
-├── rector-php74.php      # Migration vers PHP 7.4
-├── rector-php80.php      # Migration vers PHP 8.0
-├── rector-php81.php      # Migration vers PHP 8.1
-├── rector-php82.php      # Migration vers PHP 8.2
-├── rector-php83.php      # Migration vers PHP 8.3
-├── rector-php84.php      # Migration vers PHP 8.4
-├── rector-flexible.php        # Configuration personnalisable
-└── rector-legacy-to-modern.php # Migration complète ancien→moderne
+
+## Versions PHP et configurations
+
+Par défaut, `rector-analyze.ps1` génère une configuration temporaire depuis `-PhpVersion`. Les cibles dynamiques supportées sont :
+
+```text
+70, 71, 72, 73, 74, 80, 81, 82, 83, 84
 ```
 
-### Choisir la bonne configuration
+Le dossier `config/` contient aussi des configurations Rector réutilisables, par exemple :
 
-**Migration progressive (recommandée) :**
-- Projets complexes ou critiques
-- Migration étape par étape pour minimiser les risques
-- Tests après chaque étape
-
-**Migration directe :**
-- Projets simples ou scripts de petite taille
-- `rector-legacy-to-modern.php` pour migration complète
-- Plus rapide mais plus risquée
-
-### Personnalisation
-```php
-// rector-custom.php
-$rectorConfig->sets([
-    LevelSetList::UP_TO_PHP_82,  // Votre version cible
-    SetList::CODE_QUALITY,       // Règles selon vos besoins
-]);
+```text
+rector-php70.php
+rector-php74.php
+rector-php80.php
+rector-php81.php
+rector-php82.php
+rector-php83.php
+rector-php84.php
+rector-customizable.php
+rector-old-code-to-php84.php
 ```
 
-## 📊 Logging & Historique
+`rector-customizable.php` sert de configuration de départ à copier puis adapter. `rector-old-code-to-php84.php` est un profil de modernisation directe pour les bases de code anciennes, surtout PHP 5.x et début PHP 7.x, avec PHP 8.4 comme cible.
 
-### Consulter l'historique des analyses
+Pour utiliser un fichier de configuration exactement tel qu'il est écrit :
+
 ```powershell
-# Afficher les 10 dernières analyses
-.\rector-analyze.ps1 -ShowHistory
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector.php" -UseRawConfig
+```
 
-# Afficher les 20 dernières analyses
+## Rapports, logs et historique
+
+Quand un rapport est sauvegardé sans `-OutputFile`, il est écrit dans `rector-output/` côté projet analysé.
+
+Les fichiers d'exécution côté dépôt sont :
+
+```text
+logs/
+  rector-analysis.log       Log texte avec entrées INFO/WARNING/ERROR/DEBUG
+  analysis-history.json     Historique structuré des analyses récentes
+  user-settings.json        Derniers choix interactifs
+```
+
+Consulter l'historique :
+
+```powershell
 .\rector-analyze.ps1 -ShowHistory -HistoryCount 20
 ```
 
-### Ouvrir les fichiers de logs
+Ouvrir les logs :
+
 ```powershell
-# Ouvrir le fichier de logs principal
 .\rector-analyze.ps1 -ShowLogs
 ```
 
-### Menu interactif
-Le menu interactif propose maintenant :
-1. **Lancer une nouvelle analyse**
-2. **Consulter l'historique des analyses**
-3. **Ouvrir les fichiers de logs**
-4. **Quitter**
+## Tests
 
-### Informations loggées
-Chaque analyse enregistre :
-- 📁 **Fichiers scannés** : Liste complète des fichiers PHP analysés
-- ⏱️ **Durée** : Temps d'exécution de l'analyse
-- 🛠️ **Règles appliquées** : Règles Rector utilisées avec compteur d'occurrences
-- 📈 **Résultats** : Fichiers modifiés, erreurs détectées
-- 👤 **Contexte** : Utilisateur, machine, horodatage
-- 🎯 **Version cible** : Version PHP extraite de la configuration
-
-### Fichiers de logs
-```
-logs/
-├── rector-analysis.log      # Log textuel détaillé (INFO/WARNING/ERROR)
-└── analysis-history.json    # Historique JSON structuré (100 dernières analyses)
+```powershell
+.\run_unit_tests.bat
 ```
 
-### Exemple d'historique JSON
-```json
-{
-  "id": "abc-123",
-  "timestamp": "2024-12-10T14:30:00",
-  "projectName": "mon-projet",
-  "phpVersionTarget": "8.1",
-  "totalFilesScanned": 45,
-  "changedFiles": 12,
-  "duration": 3.45,
-  "status": "SUCCESS"
-}
+Ou :
+
+```powershell
+cd unit_tests
+composer install
+composer test
 ```
 
-## 🎨 Exemples de rapports
+Les tests créent des projets PHP temporaires et vérifient que `rector-analyze.ps1` remonte les erreurs de syntaxe ou de compatibilité en dry-run.
 
-### Format simple
-```markdown
-# Analyse Rector - MonProjet
+## Documentation
 
-📊 **Résumé** : 15 fichiers, 42 améliorations possibles
-🎯 **Cible** : PHP 8.4
-⚡ **Impact** : Modernisation recommandée
-```
-
-### Format détaillé
-```markdown
-## 📂 src/Models/User.php
-- **Ligne 23** : `AddArrayDefaultToArrayPropertyRector`
-- **Suggestion** : Ajouter `= []` par défaut
-- **Avant** : `private array $roles;`
-- **Après** : `private array $roles = [];`
-```
-
-## 🛠️ Prérequis
-
-- **Windows** : PowerShell 5.1 ou supérieur
-- **PHP** : 7.4+ (recommandé : 8.1+)
-- **Composer** : Pour l'installation de Rector
-- **Git** : Pour le clonage et les mises à jour
-
-## 📚 Documentation
-
-- [🇺🇸 English documentation](README.md)
+- [Documentation anglaise](README-EN.md)
 - [Guide de démarrage](docs/getting-started.md)
+- [Démarrage rapide](docs/quick-start.md)
 - [Configuration avancée](docs/advanced-config.md)
-- [Personnalisation](docs/customization.md)
-- [Dépannage](docs/troubleshooting.md)
+- [Guide de migration](docs/migration-guide.md)
+- [Index de documentation](docs/INDEX.md)
+- [Guide de contribution](CONTRIBUTING.md)
 
-## 🤝 Contribution
+## Licence
 
-Les contributions sont les bienvenues ! Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour les détails.
-
-📖 **Documentation de contribution** : [�� English](CONTRIBUTING-EN.md) | [�� Français](CONTRIBUTING.md)
-
-## 📄 Licence
-
-MIT License - voir [LICENSE](LICENSE) pour plus de détails.
-
-## 🙏 Remerciements
-
-- [Rector](https://github.com/rectorphp/rector) - L'outil de modernisation PHP
-- Communauté PHP - Pour le feedback et les améliorations
-
----
-
-**Made with ❤️ for PHP developers**
+Licence MIT. Voir [LICENSE](LICENSE).

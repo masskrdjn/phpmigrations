@@ -15,7 +15,7 @@ php -v
 
 | Situation | Configuration recommandée | Temps estimé |
 |-----------|---------------------------|--------------|
-| **Projet PHP 5.6-7.3** | `rector-legacy-to-modern.php` | 2-4 heures |
+| **Projet PHP 5.6-7.3** | `rector-old-code-to-php84.php` | 2-4 heures |
 | **Projet PHP 7.4** | `rector-php81.php` | 30 minutes |
 | **Projet PHP 8.0-8.2** | `rector-php84.php` | 15 minutes |
 | **Migration progressive** | Configurations étape par étape | Variable |
@@ -35,7 +35,7 @@ php -v
 ### Via les tâches (Ctrl+Shift+P → "Tasks: Run Task")
 
 - **🚀 Rector: Menu Interactif** - Interface complète
-- **🔄 Migration: PHP Legacy → Moderne** - Migration complète
+- **🔄 Migration: vieux code PHP → PHP 8.4** - Migration complète
 - **🎯 Migration: PHP 7.4 → 8.1** - Migration courante
 - **🚀 Migration: PHP 8.x → 8.4** - Dernière version
 
@@ -45,8 +45,8 @@ php -v
 # Migration la plus courante : PHP 7.4 → PHP 8.1
 .\rector-analyze.ps1 -ConfigFile "config\rector-php81.php"
 
-# Projet très ancien → PHP moderne
-.\rector-analyze.ps1 -ConfigFile "config\rector-legacy-to-modern.php"
+# Vieux code PHP → PHP 8.4
+.\rector-analyze.ps1 -ConfigFile "config\rector-old-code-to-php84.php"
 
 # Dernière version PHP
 .\rector-analyze.ps1 -ConfigFile "config\rector-php84.php"
@@ -86,7 +86,7 @@ php -v
 ### Scénario 3 : Script PHP personnalisé
 ```powershell
 # Configuration flexible adaptable
-.\rector-analyze.ps1 -ProjectPath "C:\mon-script" -ConfigFile "config\rector-flexible.php"
+.\rector-analyze.ps1 -ProjectPath "C:\mon-script" -ConfigFile "config\rector-customizable.php"
 ```
 
 ## 🛡️ Mode sécurisé (recommandé)
@@ -116,7 +116,7 @@ php -v
 ### Migration directe (projets simples)
 ```powershell
 # Tout en une fois
-.\rector-analyze.ps1 -ConfigFile "config\rector-legacy-to-modern.php"
+.\rector-analyze.ps1 -ConfigFile "config\rector-old-code-to-php84.php"
 ```
 
 ## 🔧 Personnalisation rapide

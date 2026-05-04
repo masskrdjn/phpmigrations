@@ -7,14 +7,14 @@ use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 
 /**
- * Configuration Rector flexible pour migration entre versions PHP
- * 
- * Cette configuration peut être adaptée pour migrer depuis n'importe
- * quelle version PHP vers une version plus récente.
- * 
- * Modifiez les sets selon vos besoins :
- * - UP_TO_PHP_XX : pour migrer vers une version spécifique
- * - phpVersion() : pour définir la version cible
+ * Configuration Rector personnalisable.
+ *
+ * Ce fichier sert de modèle de départ à copier puis adapter pour une migration
+ * vers la version PHP cible de votre choix. Par défaut, il cible PHP 8.1.
+ *
+ * Modifiez ensemble :
+ * - LevelSetList::UP_TO_PHP_XX pour choisir les transformations Rector
+ * - phpVersion() pour déclarer la version PHP cible
  */
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([

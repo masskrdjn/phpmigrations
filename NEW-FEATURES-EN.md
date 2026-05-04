@@ -22,15 +22,15 @@
 
 ### 🛠️ Specialized configurations
 
-- **`rector-flexible.php`**: Adaptable configuration with explanatory comments
-- **`rector-legacy-to-modern.php`**: Complete old → modern migration
+- **`rector-customizable.php`**: Adaptable configuration with explanatory comments
+- **`rector-old-code-to-php84.php`**: Old PHP code to PHP 8.4 migration
 
 ### 📋 New VS Code tasks
 
-- **🔄 Migration: PHP Legacy → Modern** - Complete migration
+- **🔄 Migration: Old PHP Code → PHP 8.4** - Complete migration
 - **🎯 Migration: PHP 7.4 → 8.1** - Most common migration
 - **🚀 Migration: PHP 8.x → 8.4** - Latest version
-- **🛠️ Configuration: Flexible** - Customizable configuration
+- **🛠️ Configuration: personnalisable** - Customizable configuration
 
 ### 📚 Extended documentation
 
@@ -51,7 +51,7 @@
 # Usage examples
 .\rector-analyze.ps1 -ConfigFile "config\rector-php74.php"  # → PHP 7.4
 .\rector-analyze.ps1 -ConfigFile "config\rector-php81.php"  # → PHP 8.1
-.\rector-analyze.ps1 -ConfigFile "config\rector-legacy-to-modern.php"  # → Modern
+.\rector-analyze.ps1 -ConfigFile "config\rector-old-code-to-php84.php"  # → Modern
 ```
 
 ### Via VS Code (Ctrl+Shift+P → Tasks)
@@ -68,7 +68,7 @@
 ### Direct migration (simple projects)
 - **Old PHP** → **Modern PHP** in a single step
 - Time saving for small projects
-- Optimized `rector-legacy-to-modern.php` configuration
+- Optimized `rector-old-code-to-php84.php` configuration
 
 ### Targeted migration (server constraints)
 - **To a specific version** according to production environment
@@ -87,7 +87,7 @@
 
 ### Robustness
 - **Tested configurations** for each version
-- **Appropriate exclusions** according to legacy context
+- **Appropriate exclusions** according to old-code context
 - **Secure migration** with dry-run mode by default
 
 ## 🚀 Next steps

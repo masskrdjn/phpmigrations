@@ -7,11 +7,14 @@ use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 
 /**
- * Configuration Rector pour migration depuis PHP ancien vers moderne
- * 
- * Cette configuration est spécialement conçue pour migrer des projets
- * PHP très anciens (5.x et début 7.x) vers des versions modernes.
- * Elle inclut toutes les transformations progressives nécessaires.
+ * Configuration Rector pour vieux code PHP vers PHP 8.4.
+ *
+ * "Vieux code" désigne ici surtout les projets PHP 5.x et début PHP 7.x,
+ * ou les applications avec patterns historiques : includes, templates PHP
+ * mélangés, anciens CMS, code procédural, array(), constructeurs anciens.
+ *
+ * Cette config fait un grand saut vers PHP 8.4. Pour un projet critique,
+ * préférez une migration progressive version par version.
  */
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
@@ -28,9 +31,9 @@ return static function (RectorConfig $rectorConfig): void {
         // Ajoutez vos dossiers ici
     ]);
 
-    // Migration progressive complète
+    // Migration directe vers PHP 8.4
     $rectorConfig->sets([
-        // Migration vers les dernières versions PHP
+        // Migration vers PHP 8.4
         LevelSetList::UP_TO_PHP_84,
         
         // Amélioration de la qualité du code
@@ -46,7 +49,7 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::CARBON_2,
     ]);
 
-    // Exclusions étendues pour projets legacy
+    // Exclusions et garde-fous pour vieux projets PHP
     $rectorConfig->skip([
         // Dossiers système
         __DIR__ . '/vendor',
@@ -68,7 +71,7 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/images',
         __DIR__ . '/img',
         
-        // Dossiers legacy communs
+        // Dossiers courants dans les vieux projets
         __DIR__ . '/backup',
         __DIR__ . '/backups',
         __DIR__ . '/old',
@@ -90,7 +93,7 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/setup.php',
         __DIR__ . '/migration.php',
         
-        // CMS legacy patterns
+        // Patterns CMS anciens
         __DIR__ . '/wp-admin',
         __DIR__ . '/wp-includes',
         __DIR__ . '/wp-content',
@@ -98,7 +101,7 @@ return static function (RectorConfig $rectorConfig): void {
         __DIR__ . '/components',
         __DIR__ . '/modules/*/tmpl',
         
-        // Certaines règles qui peuvent être problématiques pour code legacy
+        // Certaines règles peuvent être trop agressives sur du vieux code
         \Rector\Php74\Rector\Property\TypedPropertyRector::class,
         \Rector\TypeDeclaration\Rector\Property\TypedPropertyFromStrictConstructorRector::class,
     ]);
@@ -110,7 +113,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->parallel();
     $rectorConfig->cacheDirectory(__DIR__ . '/var/cache/rector');
     
-    // Règles personnalisées pour migration legacy
+    // Règles personnalisées pour moderniser du vieux code
     $rectorConfig->rules([
         // Modernisation des constructeurs PHP 4 -> PHP 5+
         \Rector\Php55\Rector\String_\StringClassNameToClassConstantRector::class,

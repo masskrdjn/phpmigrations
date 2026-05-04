@@ -1,9 +1,9 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Test complete legacy to modern PHP migration
+    Test complete old-code to PHP 8.4 migration
 .DESCRIPTION
-    Tests the migration from legacy PHP (5.6+) to modern PHP 8.4 using Rector
+    Tests the migration from old PHP code (5.6+) to PHP 8.4 using Rector
 #>
 
 param(
@@ -14,12 +14,12 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "🚀 Testing Legacy → Modern PHP Migration" -ForegroundColor Cyan
+Write-Host "🚀 Testing Old Code → PHP 8.4 PHP Migration" -ForegroundColor Cyan
 Write-Host "=" * 50
 
 # Source and target directories
 $SourceDir = "examples\php-versions\$SourceVersion"
-$ConfigFile = "config\rector-legacy-to-modern.php"
+$ConfigFile = "config\rector-old-code-to-php84.php"
 
 # Check if source files exist
 if (-not (Test-Path $SourceDir)) {
@@ -69,7 +69,7 @@ try {
 }
 
 Write-Host ""
-Write-Host "📊 Expected changes in Legacy → Modern migration:" -ForegroundColor Magenta
+Write-Host "📊 Expected changes in Old Code → PHP 8.4 migration:" -ForegroundColor Magenta
 Write-Host "  🔧 Syntax Modernization:" -ForegroundColor Cyan
 Write-Host "    • array() → []" -ForegroundColor White
 Write-Host "    • isset() → null coalescing operator (??)" -ForegroundColor White

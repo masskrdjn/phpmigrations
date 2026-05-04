@@ -13,7 +13,7 @@ Test gradual updates from one version to the next:
 
 ### 2. Direct Migration
 Test direct jumps to modern versions:
-- `test-legacy-to-modern.ps1` - Complete modernization
+- `test-old-code-to-php84.ps1` - Complete modernization
 - `test-php56-to-84.ps1` - Direct to latest
 
 ### 3. Feature-Specific Tests

@@ -25,7 +25,7 @@ Notre outil supporte maintenant la migration depuis et vers toutes les versions 
 
 | Configuration | Description | Recommandé pour |
 |---------------|-------------|-----------------|
-| `rector-php56.php` | Migration vers PHP 5.6 | Projets legacy très anciens |
+| `rector-php56.php` | Migration vers PHP 5.6 | Projets PHP très anciens |
 | `rector-php70.php` | Migration vers PHP 7.0 | Premier pas vers PHP moderne |
 | `rector-php71.php` | Migration vers PHP 7.1 | Ajout des nullable types |
 | `rector-php72.php` | Migration vers PHP 7.2 | Amélioration des types |
@@ -41,8 +41,8 @@ Notre outil supporte maintenant la migration depuis et vers toutes les versions 
 
 | Configuration | Description | Usage |
 |---------------|-------------|-------|
-| `rector-flexible.php` | Configuration adaptable | Personnalisation avancée |
-| `rector-legacy-to-modern.php` | Migration complète | Projets très anciens → PHP moderne |
+| `rector-customizable.php` | Configuration adaptable | Personnalisation avancée |
+| `rector-old-code-to-php84.php` | Migration complète | Vieux code PHP 5.x / début 7.x vers PHP 8.4 |
 
 ## 🚀 Scénarios de migration courants
 
@@ -67,7 +67,7 @@ Pour migrer directement vers une version récente :
 
 ```powershell
 # PHP ancien → PHP 8.4 (dernière version)
-.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector-legacy-to-modern.php"
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector-old-code-to-php84.php"
 ```
 
 ### 3. Migration ciblée
@@ -85,7 +85,7 @@ Pour migrer vers une version spécifique :
 - ✅ **PHP 7.0** - Migration sûre, changements majeurs
 - ✅ **PHP 7.4** - Migration progressive recommandée
 - ⚠️ **PHP 8.0** - Attention aux breaking changes
-- ⚠️ **PHP 8.4** - Utiliser `rector-legacy-to-modern.php`
+- ⚠️ **PHP 8.4** - Utiliser `rector-old-code-to-php84.php`
 
 ### Depuis PHP 7.x
 - ✅ **PHP 8.1** - Migration naturelle
@@ -201,7 +201,7 @@ php -v
 
 ```powershell
 # Script personnalisé → PHP moderne
-.\rector-analyze.ps1 -ProjectPath "C:\mon-script" -ConfigFile "rector-legacy-to-modern.php"
+.\rector-analyze.ps1 -ProjectPath "C:\mon-script" -ConfigFile "rector-old-code-to-php84.php"
 ```
 
 ## 📈 Avantages par version

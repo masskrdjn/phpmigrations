@@ -35,20 +35,20 @@ $TestScenarios = @(
         Description = "Basic modernization"
     },
     @{
-        Name = "Legacy → Modern (PHP 5.6)"
-        Script = "test-legacy-to-modern.ps1"
+        Name = "Old Code → PHP 8.4 (PHP 5.6)"
+        Script = "test-old-code-to-php84.ps1"
         Description = "Complete modernization from PHP 5.6"
         Params = @{ SourceVersion = "php56" }
     },
     @{
-        Name = "Legacy → Modern (PHP 7.0)"  
-        Script = "test-legacy-to-modern.ps1"
+        Name = "Old Code → PHP 8.4 (PHP 7.0)"
+        Script = "test-old-code-to-php84.ps1"
         Description = "Complete modernization from PHP 7.0"
         Params = @{ SourceVersion = "php70" }
     },
     @{
-        Name = "Legacy → Modern (PHP 7.4)"
-        Script = "test-legacy-to-modern.ps1"
+        Name = "Old Code → PHP 8.4 (PHP 7.4)"
+        Script = "test-old-code-to-php84.ps1"
         Description = "Complete modernization from PHP 7.4"
         Params = @{ SourceVersion = "php74" }
     }

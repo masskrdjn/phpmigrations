@@ -25,7 +25,7 @@ Our tool now supports migration from and to all major PHP versions:
 
 | Configuration | Description | Recommended for |
 |---------------|-------------|-----------------|
-| `rector-php56.php` | Migration to PHP 5.6 | Very old legacy projects |
+| `rector-php56.php` | Migration to PHP 5.6 | Very old PHP projects |
 | `rector-php70.php` | Migration to PHP 7.0 | First step to modern PHP |
 | `rector-php71.php` | Migration to PHP 7.1 | Adding nullable types |
 | `rector-php72.php` | Migration to PHP 7.2 | Type improvements |
@@ -41,8 +41,8 @@ Our tool now supports migration from and to all major PHP versions:
 
 | Configuration | Description | Usage |
 |---------------|-------------|-------|
-| `rector-flexible.php` | Adaptable configuration | Advanced customization |
-| `rector-legacy-to-modern.php` | Complete migration | Very old projects → Modern PHP |
+| `rector-customizable.php` | Adaptable configuration | Advanced customization |
+| `rector-old-code-to-php84.php` | Complete migration | Old PHP 5.x / early 7.x code to PHP 8.4 |
 
 ## 🚀 Common migration scenarios
 
@@ -67,7 +67,7 @@ To migrate directly to a recent version:
 
 ```powershell
 # Old PHP → PHP 8.4 (latest version)
-.\rector-analyze.ps1 -ProjectPath "C:\my\project" -ConfigFile "rector-legacy-to-modern.php"
+.\rector-analyze.ps1 -ProjectPath "C:\my\project" -ConfigFile "rector-old-code-to-php84.php"
 ```
 
 ### 3. Targeted migration
@@ -85,7 +85,7 @@ To migrate to a specific version:
 - ✅ **PHP 7.0** - Safe migration, major changes
 - ✅ **PHP 7.4** - Recommended progressive migration
 - ⚠️ **PHP 8.0** - Watch for breaking changes
-- ⚠️ **PHP 8.4** - Use `rector-legacy-to-modern.php`
+- ⚠️ **PHP 8.4** - Use `rector-old-code-to-php84.php`
 
 ### From PHP 7.x
 - ✅ **PHP 8.1** - Natural migration
@@ -201,7 +201,7 @@ php -v
 
 ```powershell
 # Custom script → Modern PHP
-.\rector-analyze.ps1 -ProjectPath "C:\my-script" -ConfigFile "rector-legacy-to-modern.php"
+.\rector-analyze.ps1 -ProjectPath "C:\my-script" -ConfigFile "rector-old-code-to-php84.php"
 ```
 
 ## 📈 Benefits by version

@@ -83,8 +83,8 @@
 | **PHP 8.2** | `config/rector-php82.php` | Readonly classes |
 | **PHP 8.3** | `config/rector-php83.php` | Typed constants |
 | **PHP 8.4** | `config/rector-php84.php` | Property hooks |
-| **Flexible** | `config/rector-flexible.php` | Customizable |
-| **Legacy→Modern** | `config/rector-legacy-to-modern.php` | Complete migration |
+| **Customizable** | `config/rector-customizable.php` | Copy-and-edit starter config |
+| **Old Code→PHP 8.4** | `config/rector-old-code-to-php84.php` | Complete migration |
 
 ### Scripts / Scripts
 
@@ -99,10 +99,10 @@
 ### Tasks / Tâches disponibles
 
 - **🚀 Rector: Menu Interactif** - Interface complète
-- **🔄 Migration: PHP Legacy → Moderne** - Migration complète
+- **🔄 Migration: vieux code PHP → PHP 8.4** - Migration complète
 - **🎯 Migration: PHP 7.4 → 8.1** - Migration courante
 - **🚀 Migration: PHP 8.x → 8.4** - Dernière version
-- **🛠️ Configuration: Flexible** - Configuration personnalisable
+- **🛠️ Configuration: personnalisable** - Configuration personnalisable
 
 ### Extensions recommandées
 
@@ -124,8 +124,8 @@
 # Safe analysis / Analyse sécurisée
 .\rector-analyze.ps1 -DryRun:$true
 
-# Complete migration / Migration complète
-.\rector-analyze.ps1 -ConfigFile "config\rector-legacy-to-modern.php"
+# Old code to PHP 8.4 / Vieux code vers PHP 8.4
+.\rector-analyze.ps1 -ConfigFile "config\rector-old-code-to-php84.php"
 ```
 
 ### Migration Paths / Chemins de migration
