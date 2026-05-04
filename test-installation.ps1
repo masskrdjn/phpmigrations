@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script de test et validation - Rector PHP Analysis Tools
 # ==============================================================================
 
@@ -7,6 +7,8 @@ param(
     [switch]$Verbose = $false,
     [switch]$Help = $false
 )
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 if ($Help) {
     Write-Host @"
@@ -20,7 +22,7 @@ DESCRIPTION:
 
 PARAMETRES:
     -Quick      Tests rapides uniquement
-    -Verbose    Affichage detaille
+    -Verbose    Affichage détaillé
     -Help       Affiche cette aide
 
 EXEMPLES:
@@ -37,27 +39,27 @@ EXEMPLES:
 
 function Write-TestHeader {
     param([string]$Title)
+    $banner = "=" * 60
     Write-Host ""
-    Write-Host "=" * 60 -ForegroundColor Blue
+    Write-Host $banner -ForegroundColor Blue
     Write-Host "  $Title" -ForegroundColor Blue
-    Write-Host "=" * 60 -ForegroundColor Blue
+    Write-Host $banner -ForegroundColor Blue
 }
 
 function Write-TestResult {
     param([bool]$Success, [string]$Message)
     if ($Success) {
-        Write-Host "✅ $Message" -ForegroundColor Green
+        Write-Host "[OK]   $Message" -ForegroundColor Green
     } else {
-        Write-Host "❌ $Message" -ForegroundColor Red
+        Write-Host "[FAIL] $Message" -ForegroundColor Red
     }
 }
 
 function Test-Prerequisites {
     Write-TestHeader "Test des prérequis"
-    
+
     $allGood = $true
-    
-    # Test PowerShell
+
     try {
         $psVersion = $PSVersionTable.PSVersion
         Write-TestResult $true "PowerShell $psVersion détecté"
@@ -68,8 +70,7 @@ function Test-Prerequisites {
         Write-TestResult $false "PowerShell non détecté"
         $allGood = $false
     }
-    
-    # Test PHP
+
     try {
         $phpVersion = php -v 2>$null
         if ($LASTEXITCODE -eq 0) {
@@ -82,8 +83,7 @@ function Test-Prerequisites {
         Write-TestResult $false "PHP non installé ou pas dans le PATH"
         $allGood = $false
     }
-    
-    # Test Composer
+
     try {
         $composerVersion = composer --version 2>$null
         if ($LASTEXITCODE -eq 0) {
@@ -95,18 +95,24 @@ function Test-Prerequisites {
         Write-TestResult $false "Composer non installé ou pas dans le PATH"
         $allGood = $false
     }
-    
+
     return $allGood
 }
 
 function Test-ProjectStructure {
     Write-TestHeader "Test de la structure du projet"
-    
+
     $allGood = $true
-    $requiredDirs = @("scripts", "config", "examples", "docs", "templates")
-    $requiredFiles = @("rector-analyze.ps1", "README.md", "LICENSE")
-    
-    # Test des dossiers
+    # NB: 'templates' a été retiré — il n'existe plus dans le projet.
+    $requiredDirs  = @("scripts", "config", "examples", "docs", "logs")
+    $requiredFiles = @(
+        "rector-analyze.ps1",
+        "analyze-rector-readable.ps1",
+        "analyze-rector-detailed.ps1",
+        "README.md",
+        "LICENSE"
+    )
+
     foreach ($dir in $requiredDirs) {
         if (Test-Path $dir) {
             Write-TestResult $true "Dossier '$dir' présent"
@@ -115,8 +121,7 @@ function Test-ProjectStructure {
             $allGood = $false
         }
     }
-    
-    # Test des fichiers
+
     foreach ($file in $requiredFiles) {
         if (Test-Path $file) {
             Write-TestResult $true "Fichier '$file' présent"
@@ -125,129 +130,130 @@ function Test-ProjectStructure {
             $allGood = $false
         }
     }
-    
-    # Test des scripts
+
     $scripts = Get-ChildItem "scripts\*.ps1" -ErrorAction SilentlyContinue
     if ($scripts.Count -gt 0) {
-        Write-TestResult $true "$($scripts.Count) scripts PowerShell trouvés"
+        Write-TestResult $true "$($scripts.Count) script(s) PowerShell dans scripts/"
         if ($Verbose) {
             foreach ($script in $scripts) {
                 Write-Host "   - $($script.Name)" -ForegroundColor Gray
             }
         }
     } else {
-        Write-TestResult $false "Aucun script PowerShell trouvé"
+        Write-TestResult $false "Aucun script PowerShell dans scripts/"
         $allGood = $false
     }
-    
+
     return $allGood
 }
 
 function Test-Scripts {
     Write-TestHeader "Test des scripts PowerShell"
-    
+
     $allGood = $true
-    
-    # Test syntaxe du script principal
-    try {
-        $null = [System.Management.Automation.PSParser]::Tokenize(
-            (Get-Content "rector-analyze.ps1" -Raw), [ref]$null
-        )
-        Write-TestResult $true "Syntaxe du script principal valide"
-    } catch {
-        Write-TestResult $false "Erreur de syntaxe dans rector-analyze.ps1: $($_.Exception.Message)"
-        $allGood = $false
-    }
-    
-    # Test des scripts individuels
-    $scripts = @(
-        "scripts\install-rector.ps1",
-        "scripts\analyze-rector-simple.ps1",
-        "scripts\analyze-rector-readable.ps1",
-        "scripts\analyze-rector-detailed.ps1"
+
+    $scriptsToCheck = @(
+        "rector-analyze.ps1",
+        "analyze-rector-readable.ps1",
+        "analyze-rector-detailed.ps1",
+        "scripts\install-rector.ps1"
     )
-    
-    foreach ($scriptPath in $scripts) {
-        if (Test-Path $scriptPath) {
-            try {
-                $null = [System.Management.Automation.PSParser]::Tokenize(
-                    (Get-Content $scriptPath -Raw), [ref]$null
-                )
-                Write-TestResult $true "Script $(Split-Path $scriptPath -Leaf) - syntaxe OK"
-            } catch {
-                Write-TestResult $false "Erreur dans $(Split-Path $scriptPath -Leaf): $($_.Exception.Message)"
-                $allGood = $false
-            }
-        } else {
+
+    foreach ($scriptPath in $scriptsToCheck) {
+        if (-not (Test-Path $scriptPath)) {
             Write-TestResult $false "Script $scriptPath manquant"
+            $allGood = $false
+            continue
+        }
+        try {
+            $null = [System.Management.Automation.PSParser]::Tokenize(
+                (Get-Content $scriptPath -Raw), [ref]$null
+            )
+            Write-TestResult $true "Script $(Split-Path $scriptPath -Leaf) - syntaxe OK"
+        } catch {
+            Write-TestResult $false "Erreur dans $(Split-Path $scriptPath -Leaf): $($_.Exception.Message)"
             $allGood = $false
         }
     }
-    
+
+    return $allGood
+}
+
+function Test-Encoding {
+    Write-TestHeader "Test de l'encodage des scripts (UTF-8 BOM)"
+
+    $allGood = $true
+    $scripts = @(
+        "rector-analyze.ps1",
+        "analyze-rector-readable.ps1",
+        "analyze-rector-detailed.ps1",
+        "scripts\install-rector.ps1",
+        "test-installation.ps1"
+    )
+    foreach ($s in $scripts) {
+        if (-not (Test-Path $s)) { continue }
+        $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $s).Path)
+        # Vérifier la présence du BOM UTF-8 (EF BB BF)
+        $hasBom = $bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF
+        if ($hasBom) {
+            Write-TestResult $true "$s est en UTF-8 avec BOM"
+        } else {
+            Write-TestResult $false "$s n'a PAS de BOM UTF-8 (les accents seront cassés en PS 5.1)"
+            $allGood = $false
+        }
+    }
     return $allGood
 }
 
 function Test-ExampleProject {
     Write-TestHeader "Test du projet d'exemple"
-    
+
     $allGood = $true
     $examplePath = "examples\sample-php-project"
-    
-    if (Test-Path $examplePath) {
-        Write-TestResult $true "Projet d'exemple trouvé"
-        
-        # Test des fichiers PHP
-        $phpFiles = Get-ChildItem "$examplePath\src\*.php" -ErrorAction SilentlyContinue
-        if ($phpFiles.Count -gt 0) {
-            Write-TestResult $true "$($phpFiles.Count) fichiers PHP d'exemple"
-            
-            # Test syntaxe PHP
-            foreach ($phpFile in $phpFiles) {
-                try {
-                    $syntax = php -l $phpFile.FullName 2>&1
-                    if ($LASTEXITCODE -eq 0) {
-                        Write-TestResult $true "Syntaxe PHP OK: $($phpFile.Name)"
-                    } else {
-                        Write-TestResult $false "Erreur syntaxe PHP: $($phpFile.Name)"
-                        $allGood = $false
-                    }
-                } catch {
-                    Write-TestResult $false "Impossible de tester $($phpFile.Name)"
-                    $allGood = $false
-                }
+
+    if (!(Test-Path $examplePath)) {
+        Write-TestResult $false "Projet d'exemple manquant"
+        return $false
+    }
+    Write-TestResult $true "Projet d'exemple trouvé"
+
+    $phpFiles = Get-ChildItem "$examplePath\src\*.php" -ErrorAction SilentlyContinue
+    if (-not $phpFiles -or $phpFiles.Count -eq 0) {
+        Write-TestResult $false "Aucun fichier PHP d'exemple trouvé"
+        return $false
+    }
+    Write-TestResult $true "$($phpFiles.Count) fichier(s) PHP d'exemple"
+
+    foreach ($phpFile in $phpFiles) {
+        try {
+            $null = php -l $phpFile.FullName 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-TestResult $true "Syntaxe PHP OK : $($phpFile.Name)"
+            } else {
+                Write-TestResult $false "Erreur syntaxe PHP : $($phpFile.Name)"
+                $allGood = $false
             }
-        } else {
-            Write-TestResult $false "Aucun fichier PHP d'exemple trouvé"
+        } catch {
+            Write-TestResult $false "Impossible de tester $($phpFile.Name)"
             $allGood = $false
         }
-    } else {
-        Write-TestResult $false "Projet d'exemple manquant"
-        $allGood = $false
     }
-    
+
     return $allGood
 }
 
 function Test-FunctionalTest {
     Write-TestHeader "Test fonctionnel"
-    
+
     if ($Quick) {
-        Write-Host "⏩ Tests fonctionnels ignorés (mode Quick)" -ForegroundColor Yellow
+        Write-Host "[..] Tests fonctionnels ignorés (mode Quick)" -ForegroundColor Yellow
         return $true
     }
-    
+
     $allGood = $true
-    $examplePath = "examples\sample-php-project"
-    
-    if (!(Test-Path $examplePath)) {
-        Write-TestResult $false "Projet d'exemple nécessaire pour les tests fonctionnels"
-        return $false
-    }
-    
+
     try {
-        Write-Host "Exécution du script principal..." -ForegroundColor Yellow
-        
-        # Test avec aide
+        Write-Host "Exécution de l'aide du script principal..." -ForegroundColor Yellow
         $helpOutput = & ".\rector-analyze.ps1" -Help 2>&1
         if ($helpOutput -match "RECTOR PHP ANALYSIS TOOLS") {
             Write-TestResult $true "Aide du script principal fonctionnelle"
@@ -255,49 +261,38 @@ function Test-FunctionalTest {
             Write-TestResult $false "Aide du script principal défaillante"
             $allGood = $false
         }
-        
-        # Test script simple
-        Write-Host "Test du script d'analyse simple..." -ForegroundColor Yellow
-        $simpleOutput = & ".\scripts\analyze-rector-simple.ps1" -Help 2>&1
-        if ($simpleOutput -match "RECTOR ANALYSIS") {
-            Write-TestResult $true "Script d'analyse simple fonctionnel"
-        } else {
-            Write-TestResult $false "Script d'analyse simple défaillant"
-            $allGood = $false
-        }
-        
     } catch {
         Write-TestResult $false "Erreur lors des tests fonctionnels: $($_.Exception.Message)"
         $allGood = $false
     }
-    
+
     return $allGood
 }
 
 function Show-Summary {
     param([hashtable]$Results)
-    
     Write-TestHeader "Résumé des tests"
-    
-    $totalTests = $Results.Count
+
+    $totalTests  = $Results.Count
     $passedTests = ($Results.Values | Where-Object { $_ -eq $true }).Count
     $failedTests = $totalTests - $passedTests
-    
-    Write-Host "Total des tests: $totalTests" -ForegroundColor Cyan
-    Write-Host "Tests réussis:   $passedTests" -ForegroundColor Green
-    Write-Host "Tests échoués:   $failedTests" -ForegroundColor Red
-    
+
+    Write-Host "Total des tests : $totalTests" -ForegroundColor Cyan
+    Write-Host "Tests réussis   : $passedTests" -ForegroundColor Green
+    Write-Host "Tests échoués   : $failedTests" -ForegroundColor Red
+
     $percentage = [math]::Round(($passedTests / $totalTests) * 100, 1)
-    Write-Host "Taux de réussite: $percentage%" -ForegroundColor $(if($percentage -ge 80) {"Green"} elseif($percentage -ge 60) {"Yellow"} else {"Red"})
-    
+    $color = if ($percentage -ge 80) { "Green" } elseif ($percentage -ge 60) { "Yellow" } else { "Red" }
+    Write-Host "Taux de réussite : $percentage%" -ForegroundColor $color
+
     Write-Host ""
     if ($failedTests -eq 0) {
-        Write-Host "🎉 Tous les tests sont passés ! L'installation est correcte." -ForegroundColor Green
-        Write-Host "Vous pouvez maintenant utiliser: .\rector-analyze.ps1" -ForegroundColor Cyan
+        Write-Host "Tous les tests sont passés. L'installation est correcte." -ForegroundColor Green
+        Write-Host "Vous pouvez maintenant utiliser : .\rector-analyze.ps1" -ForegroundColor Cyan
     } elseif ($failedTests -le 2) {
-        Write-Host "⚠️  Quelques problèmes mineurs détectés, mais l'outil devrait fonctionner." -ForegroundColor Yellow
+        Write-Host "Quelques problèmes mineurs détectés, mais l'outil devrait fonctionner." -ForegroundColor Yellow
     } else {
-        Write-Host "❌ Problèmes importants détectés. Veuillez corriger avant utilisation." -ForegroundColor Red
+        Write-Host "Problèmes importants détectés. Veuillez corriger avant utilisation." -ForegroundColor Red
     }
 }
 
@@ -306,31 +301,30 @@ function Show-Summary {
 # ==============================================================================
 
 Write-Host @"
-🧪 RECTOR PHP ANALYSIS TOOLS - TESTS DE VALIDATION
+RECTOR PHP ANALYSIS TOOLS - TESTS DE VALIDATION
 ==================================================
 "@ -ForegroundColor Green
 
-Write-Host "Mode: $(if($Quick) {"Rapide"} else {"Complet"})" -ForegroundColor Cyan
-Write-Host "Verbosité: $(if($Verbose) {"Activée"} else {"Standard"})" -ForegroundColor Cyan
+Write-Host "Mode      : $(if ($Quick) { 'Rapide' } else { 'Complet' })" -ForegroundColor Cyan
+Write-Host "Verbosité : $(if ($Verbose) { 'Activée' } else { 'Standard' })" -ForegroundColor Cyan
 
 $results = @{}
 
-# Exécution des tests
 $results["Prerequisites"] = Test-Prerequisites
-$results["Structure"] = Test-ProjectStructure
-$results["Scripts"] = Test-Scripts
-$results["Examples"] = Test-ExampleProject
+$results["Structure"]     = Test-ProjectStructure
+$results["Scripts"]       = Test-Scripts
+$results["Encoding"]      = Test-Encoding
+$results["Examples"]      = Test-ExampleProject
 
 if (!$Quick) {
     $results["Functional"] = Test-FunctionalTest
 }
 
-# Affichage du résumé
 Show-Summary $results
 
 Write-Host ""
-Write-Host "Pour commencer à utiliser l'outil:" -ForegroundColor Yellow
-Write-Host "1. .\scripts\install-rector.ps1" -ForegroundColor Cyan
-Write-Host "2. .\rector-analyze.ps1" -ForegroundColor Cyan
+Write-Host "Pour commencer à utiliser l'outil :" -ForegroundColor Yellow
+Write-Host "  1. .\scripts\install-rector.ps1" -ForegroundColor Cyan
+Write-Host "  2. .\rector-analyze.ps1" -ForegroundColor Cyan
 
-exit $(if(($results.Values | Where-Object { $_ -eq $false }).Count -eq 0) {0} else {1})
+exit $(if (($results.Values | Where-Object { $_ -eq $false }).Count -eq 0) { 0 } else { 1 })

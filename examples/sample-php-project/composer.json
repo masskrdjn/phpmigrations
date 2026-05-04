@@ -6,7 +6,7 @@
         "php": ">=7.4"
     },
     "require-dev": {
-        "rector/rector": "^2.1"
+        "rector/rector": "*"
     },
     "autoload": {
         "psr-4": {

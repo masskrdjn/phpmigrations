@@ -8,6 +8,10 @@ rector-*.md
 rector-*.json
 rector-*.html
 
+# Configurations Rector dynamiques générées par le script principal
+temp/
+logs/user-settings.json
+
 # Cache Rector
 var/cache/
 .rector-cache/

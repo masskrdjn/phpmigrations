@@ -1,0 +1,16 @@
+{
+    "name": "phpmigrations/unit-tests",
+    "description": "Unit tests for PHP migrations project",
+    "type": "project",
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpMigrations\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}

@@ -1,0 +1,1 @@
+{"version":1,"defects":{"PhpMigrations\\Tests\\MigrationFailureTest::testMigrationFailsOnSyntaxError":3,"PhpMigrations\\Tests\\MigrationFailureTest::testMigrationFailsOnDeprecatedFeature":3},"times":{"PhpMigrations\\Tests\\MigrationFailureTest::testMigrationFailsOnSyntaxError":3.803,"PhpMigrations\\Tests\\MigrationFailureTest::testMigrationFailsOnDeprecatedFeature":3.639}}

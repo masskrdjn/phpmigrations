@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # Script d'installation de Rector PHP Analysis Tools
 # ==============================================================================
 
@@ -275,19 +275,23 @@ Write-Host "Test de l'installation..." -ForegroundColor Yellow
 Push-Location $ProjectPath
 try {
     if ($Global) {
-        $testCommand = "rector --version"
+        $result = & rector --version 2>$null
     } else {
-        $testCommand = "vendor\bin\rector --version"
+        if (Test-Path "vendor\bin\rector.bat") {
+            $result = & "vendor\bin\rector.bat" --version 2>$null
+        } elseif (Test-Path "vendor\bin\rector") {
+            $result = & "vendor\bin\rector" --version 2>$null
+        } else {
+            $result = $null
+        }
     }
-    
-    $result = Invoke-Expression $testCommand 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "Test reussi: $result" -ForegroundColor Green
+    if ($LASTEXITCODE -eq 0 -and $result) {
+        Write-Host "Test réussi : $result" -ForegroundColor Green
     } else {
-        Write-Host "ATTENTION: Test echoue, mais l'installation peut etre correcte." -ForegroundColor Yellow
+        Write-Host "ATTENTION : Test échoué, mais l'installation peut être correcte." -ForegroundColor Yellow
     }
 } catch {
-    Write-Host "Test impossible, mais l'installation peut etre correcte." -ForegroundColor Yellow
+    Write-Host "Test impossible, mais l'installation peut être correcte." -ForegroundColor Yellow
 } finally {
     Pop-Location
 }
