@@ -25,13 +25,30 @@ The main entry point is `rector-analyze.ps1`. It can run interactively or from t
 - Composer
 - Git, for cloning and contributing
 
+## Installation Model
+
+Install this repository as a standalone tool, outside the PHP projects you want to analyze. For example:
+
+```text
+C:\tools\phpmigrations
+C:\laragon\www\my-php-project
+```
+
+Run `rector-analyze.ps1` from the `phpmigrations` directory and pass the target project with `-ProjectPath`:
+
+```powershell
+.\rector-analyze.ps1 -ProjectPath "C:\laragon\www\my-php-project" -PhpVersion 84
+```
+
+Rector itself may be installed in the target project, and this is often the best option for real migrations because Rector then runs with the same Composer dependencies and autoloading context as the project being analyzed. If the target project does not have Rector installed, this tool can also use the bundled example installation, a global Rector executable, or the helper script `scripts\install-rector.ps1`.
+
 ## Quick Start
 
 ```powershell
 git clone [REPO_URL]
 cd phpmigrations
 
-# Install Rector in the project you want to analyze, or use the bundled example.
+# Optional: install Rector for the target project, or use the bundled example fallback.
 .\scripts\install-rector.ps1
 
 # Launch the interactive wizard.

@@ -25,13 +25,30 @@ Le point d'entrée principal est `rector-analyze.ps1`. Il peut tourner en mode i
 - Composer
 - Git, pour cloner et contribuer
 
+## Modèle d'installation
+
+Installez ce dépôt comme un outil autonome, en dehors des projets PHP que vous voulez analyser. Par exemple :
+
+```text
+C:\tools\phpmigrations
+C:\laragon\www\mon-projet-php
+```
+
+Lancez `rector-analyze.ps1` depuis le dossier `phpmigrations`, puis indiquez le projet cible avec `-ProjectPath` :
+
+```powershell
+.\rector-analyze.ps1 -ProjectPath "C:\laragon\www\mon-projet-php" -PhpVersion 84
+```
+
+Rector lui-même peut être installé dans le projet cible, et c'est souvent la meilleure option pour une vraie migration : Rector s'exécute alors avec les mêmes dépendances Composer et le même contexte d'autoload que le projet analysé. Si le projet cible n'a pas Rector installé, cet outil peut aussi utiliser l'installation de l'exemple fourni, un exécutable Rector global, ou le script d'aide `scripts\install-rector.ps1`.
+
 ## Démarrage rapide
 
 ```powershell
 git clone [URL_DU_REPO]
 cd phpmigrations
 
-# Installer Rector dans le projet à analyser, ou utiliser l'exemple fourni.
+# Optionnel : installer Rector pour le projet cible, ou utiliser l'exemple fourni en fallback.
 .\scripts\install-rector.ps1
 
 # Lancer l'assistant interactif.
