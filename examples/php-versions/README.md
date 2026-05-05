@@ -19,7 +19,7 @@ Test migration from each version to the next:
 - etc.
 
 ### 2. Direct Migration / Migration directe
-Test direct migration to modern versions:
+Test direct migration to maintained PHP 8.x versions:
 - PHP 5.6 → PHP 8.4
 - PHP 7.0 → PHP 8.4
 - PHP 7.4 → PHP 8.4

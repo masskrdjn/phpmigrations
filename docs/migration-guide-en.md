@@ -1,6 +1,8 @@
 # Multi-version PHP Migration Guide
 
-> **Complete guide to migrate your PHP code from any version to a newer one**
+> **Complete guide to migrate your PHP code from an older version to a maintained target version**
+
+In this guide, **legacy** means PHP 5.x, PHP 7.0-7.3, or a codebase still using older conventions. **Modern** means a maintained PHP target with current language idioms; in this project, that usually means PHP 8.1, PHP 8.2, PHP 8.3, or PHP 8.4.
 
 ## 📋 Supported PHP versions
 
@@ -26,10 +28,10 @@ Our tool now supports migration from and to all major PHP versions:
 | Configuration | Description | Recommended for |
 |---------------|-------------|-----------------|
 | `rector-php56.php` | Migration to PHP 5.6 | Very old PHP projects |
-| `rector-php70.php` | Migration to PHP 7.0 | First step to modern PHP |
+| `rector-php70.php` | Migration to PHP 7.0 | First step toward PHP 7 and scalar types |
 | `rector-php71.php` | Migration to PHP 7.1 | Adding nullable types |
 | `rector-php72.php` | Migration to PHP 7.2 | Type improvements |
-| `rector-php73.php` | Migration to PHP 7.3 | Modern syntax |
+| `rector-php73.php` | Migration to PHP 7.3 | More recent PHP 7 syntax |
 | `rector-php74.php` | Migration to PHP 7.4 | Typed properties |
 | `rector-php80.php` | Migration to PHP 8.0 | Major PHP 8 features |
 | `rector-php81.php` | Migration to PHP 8.1 | Enums and improvements |
@@ -95,7 +97,7 @@ To migrate to a specific version:
 
 ### From PHP 8.x
 - ✅ **Higher versions** - Very safe migration
-- ✅ **Modern features** - Progressive adoption
+- ✅ **Recent PHP features** - Progressive adoption
 
 ## ⚙️ Usage with interactive interface
 
@@ -200,7 +202,7 @@ php -v
 ### Custom script
 
 ```powershell
-# Custom script → Modern PHP
+# Custom script → PHP 8.4
 .\rector-analyze.ps1 -ProjectPath "C:\my-script" -ConfigFile "rector-old-code-to-php84.php"
 ```
 
@@ -219,7 +221,7 @@ php -v
 - **Constructor promotion**: More concise code
 
 ### Migration to PHP 8.4
-- **Property hooks**: Modern encapsulation
+- **Property hooks**: More expressive encapsulation in PHP 8.4
 - **Asymmetric visibility**: Granular control
 - **Performance**: Continuous optimizations
 - **Security**: Bug fixes

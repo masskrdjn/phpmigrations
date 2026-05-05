@@ -15,13 +15,13 @@ This guide explains how to use the code examples to test all Rector migration fe
 examples/php-versions/
 ├── README.md                    # Guide principal / Main guide
 ├── php56/                       # Old PHP 5.6 code
-│   └── legacy-code.php         # Code hérité typique
-├── php70/                       # PHP 7.0 modern features  
-│   └── modern-code.php         # Fonctionnalités modernes
+│   └── legacy-code.php         # Code hérité typique : PHP 5.x ou anciennes conventions
+├── php70/                       # Fonctionnalités introduites avec PHP 7.0
+│   └── modern-code.php         # Fonctionnalités PHP 7 plus récentes
 ├── php74/                       # PHP 7.4 advanced features
 │   └── advanced-features.php   # Fonctionnalités avancées
 ├── php80/                       # PHP 8.0 cutting edge
-│   └── modern-features.php     # Fonctionnalités récentes
+│   └── modern-features.php     # Fonctionnalités PHP 8 récentes
 ├── php81/                       # PHP 8.1 enums & fibers
 │   └── enums-and-fibers.php    # Enums et fibers
 ├── php82/                       # PHP 8.2 readonly & DNF
@@ -95,9 +95,9 @@ Test step-by-step migration:
 
 #### Migration Directe / Direct Migration
 
-Testez la migration directe vers la version moderne :
+Testez la migration directe vers PHP 8.4 :
 
-Test direct migration to modern version:
+Test direct migration to PHP 8.4:
 
 ```powershell
 # PHP 5.6 → PHP 8.4 (saut direct)
@@ -205,7 +205,7 @@ cp config\rector-customizable.php config\my-custom-config.php
 ### Tests Essentiels / Essential Tests
 
 - [ ] **Migration PHP 5.6 → 7.0** : Modernisation de base
-- [ ] **Migration PHP 7.4 → 8.1** : Transition moderne  
+- [ ] **Migration PHP 7.4 → 8.1** : Transition vers PHP 8.1
 - [ ] **Migration Old Code → PHP 8.4** : Saut complet
 - [ ] **Configuration flexible** : Personnalisation
 

@@ -12,7 +12,7 @@ Test gradual updates from one version to the next:
 - `test-php81-to-84.ps1` - PHP 8.1 to 8.4
 
 ### 2. Direct Migration
-Test direct jumps to modern versions:
+Test direct jumps to maintained PHP 8.x versions:
 - `test-old-code-to-php84.ps1` - Complete modernization
 - `test-php56-to-84.ps1` - Direct to latest
 

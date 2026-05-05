@@ -1,104 +1,76 @@
-# 📖 Contributing Documentation Overview
+# Contributing Documentation Overview
 
-> **Complete bilingual guide for project contributors**
+Complete bilingual guide for project contributors.
 
-## 🌐 Available languages
+## Available Languages
 
-### �� English documentation (Default)
+### English Documentation
 
-**[CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md)** - Complete contributing guide in English
+**[CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md)** - Complete contributing guide in English.
 
-**Content:**
+It covers:
 - How to report bugs
-- Suggest improvements
-- Submit code
+- How to suggest improvements
+- How to submit code
 - PowerShell development guidelines
 - Naming conventions
 - Testing and validation
 - Code style
 
-### �� Documentation française
+### Documentation Francaise
 
-**[CONTRIBUTING.md](../CONTRIBUTING.md)** - Guide complet de contribution en français
+**[CONTRIBUTING.md](../CONTRIBUTING.md)** - Guide complet de contribution en francais.
 
-**Contenu :**
+Il couvre :
 - Comment signaler un bug
-- Proposer des améliorations
-- Soumettre du code
-- Guidelines de développement PowerShell
-- Conventions de nommage
-- Tests et validation
-- Style de code
+- Comment proposer une amelioration
+- Comment soumettre du code
+- Les regles de developpement PowerShell
+- Les conventions de nommage
+- Les tests et validations
+- Le style de code
 
-## 🎯 Quick access by task
+## Quick Access by Task
 
-| Task | English | Français |
+| Task | English | Francais |
 |------|---------|----------|
-| **Report a bug** | [Bug reporting](../CONTRIBUTING-EN.md#report-a-bug) | [Bug reporting](../CONTRIBUTING.md#signaler-un-bug) |
-| **Feature request** | [Suggest an improvement](../CONTRIBUTING-EN.md#suggest-an-improvement) | [Proposer une amélioration](../CONTRIBUTING.md#proposer-une-amélioration) |
+| **Report a bug** | [Bug reporting](../CONTRIBUTING-EN.md#report-a-bug) | [Signaler un bug](../CONTRIBUTING.md#signaler-un-bug) |
+| **Feature request** | [Suggest an improvement](../CONTRIBUTING-EN.md#suggest-an-improvement) | [Proposer une amelioration](../CONTRIBUTING.md#proposer-une-amelioration) |
 | **Code contribution** | [Submit code](../CONTRIBUTING-EN.md#submit-code) | [Soumettre du code](../CONTRIBUTING.md#soumettre-du-code) |
-| **Documentation** | [Guidelines](../CONTRIBUTING-EN.md#documentation) | [Guidelines](../CONTRIBUTING.md#documentation) |
+| **Documentation** | [Guidelines](../CONTRIBUTING-EN.md#documentation) | [Documentation](../CONTRIBUTING.md#documentation) |
 | **Testing** | [Testing](../CONTRIBUTING-EN.md#testing) | [Tests](../CONTRIBUTING.md#tests) |
 
-## 🛠️ Developer resources
+## Developer Resources
 
-### Development setup
-Both guides include identical setup instructions:
-- PowerShell development environment
+Both contribution guides explain:
+- PowerShell development environment setup
 - Testing procedures
 - Code style guidelines
-- Project structure understanding
+- Project structure
+- Multi-version PHP support
+- Documentation maintenance
 
-### Multi-version PHP support
-Special guidelines for:
-- Adding new PHP version configurations
-- Maintaining consistency across versions
-- Testing with different PHP projects
+## Quick Start for Contributors
 
-### Documentation standards
-- Bilingual documentation requirements
-- Translation guidelines
-- Cross-reference maintenance
+1. Choose your language: [English](../CONTRIBUTING-EN.md) or [francais](../CONTRIBUTING.md).
+2. Read the development and testing guidelines.
+3. Set up your environment.
+4. Run the validation commands.
+5. Submit a focused pull request.
 
-## 🚀 Quick start for contributors
+## Project-Specific Guidelines
 
-1. **Choose your language**
-   - �� English speakers: [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) (Default)
-   - �� French speakers: [CONTRIBUTING.md](../CONTRIBUTING.md)
+### PowerShell Development
+- Keep Windows PowerShell 5.1 compatibility in mind.
+- Preserve explicit UTF-8 handling.
+- Avoid Bash-only assumptions.
 
-2. **Read the guidelines**
-   - Development standards
-   - Testing requirements
-   - Code style
+### PHP Configuration Management
+- New presets belong in `config/`.
+- Keep the `rector-php<version>.php` naming convention.
+- Test version-specific behavior with representative projects.
 
-3. **Set up your environment**
-   - Fork the repository
-   - Install dependencies
-   - Run initial tests
-
-4. **Start contributing**
-   - Pick an issue or feature
-   - Follow the development process
-   - Submit your pull request
-
-## 📋 Project-specific guidelines
-
-### PowerShell development
-- Function naming conventions
-- Error handling standards
-- Comment and documentation requirements
-- Cross-platform compatibility considerations
-
-### PHP configuration management
-- Rector configuration patterns
-- Version-specific rule selection
-- Testing across PHP versions
-
-### Documentation maintenance
-- Bilingual content synchronization
-- Cross-reference updating
-- Example code validation
-
----
-
-💡 **New contributors**: Start with the contributing guide in your preferred language, then explore the [project documentation index](INDEX.md) for complete context.
+### Documentation Maintenance
+- Keep English and French docs aligned where both exist.
+- Update cross-references when files are renamed or removed.
+- Validate example commands before publishing them.

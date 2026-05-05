@@ -1,200 +1,148 @@
-# Guide de démarrage - Rector PHP Analysis Tools
+# Guide de demarrage - Rector PHP Analysis Tools
 
-## 🚀 Installation et première utilisation
+Ce guide reste pertinent, mais il a ete mis a jour pour refleter le fonctionnement actuel du projet : la commande recommandee utilise maintenant `-PhpVersion`, qui genere une configuration Rector temporaire adaptee au projet analyse.
 
-### Prérequis
-- Windows avec PowerShell 5.1+
-- PHP 7.4+ (recommandé : PHP 8.1+)
+## Prerequis
+
+- Windows avec PowerShell 5.1 ou plus recent
+- PHP 7.4+ pour utiliser l'outil, PHP 8.0+ recommande pour les tests
 - Composer
+- Git
 
-### Installation rapide
+## Installation rapide
 
-1. **Cloner le projet**
-   ```powershell
-   git clone [URL_DU_REPO] phpmigrations
-   cd phpmigrations
-   ```
+```powershell
+git clone [URL_DU_REPO] phpmigrations
+cd phpmigrations
 
-2. **Installer Rector**
-   ```powershell
-   .\scripts\install-rector.ps1
-   ```
+.\scripts\install-rector.ps1
+.\rector-analyze.ps1
+```
 
-3. **Premier scan**
-   ```powershell
-   .\rector-analyze.ps1
-   ```
+`install-rector.ps1` installe Rector dans le projet cible ou dans l'exemple fourni. Le script principal sait aussi utiliser un Rector local au projet analyse, le Rector de l'exemple, ou un Rector global disponible dans le `PATH`.
 
-## 📊 Votre première analyse
+## Premiere analyse
 
-### Mode interactif (recommandé)
+### Mode interactif
+
 ```powershell
 .\rector-analyze.ps1
 ```
 
-Le script vous guidera à travers :
-- Sélection du projet PHP
-- Choix de la configuration Rector
-- Format de rapport souhaité
-- Options de sauvegarde
+Le menu interactif permet de choisir :
+- le projet PHP a analyser ;
+- la version PHP cible ;
+- les sets Rector additionnels ;
+- le format de rapport ;
+- le mode dry-run ou application reelle.
 
 ### Mode ligne de commande
+
 ```powershell
-# Analyse simple du répertoire actuel
-.\rector-analyze.ps1 -ProjectPath "." -OutputFormat simple
+# Analyse d'un projet vers PHP 8.4, sans appliquer les changements
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 84 -DryRun:$true
 
-# Rapport détaillé avec sauvegarde
-.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -OutputFormat detailed -OutputFile "rapport.md"
+# Rapport detaille sauvegarde dans un fichier
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 81 -OutputFormat detailed -OutputFile "rapport.md"
+
+# Ajouter des sets Rector courants
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 84 -ExtraSets CODE_QUALITY,DEAD_CODE,TYPE_DECLARATION
 ```
 
-## 📋 Formats de rapport disponibles
+## Choisir une cible PHP
 
-### 1. Simple
-- Résumé rapide
-- Statistiques de base
-- Fichiers impactés
+| Situation | Cible conseillee | Pourquoi |
+|-----------|------------------|----------|
+| Projet ancien / legacy en PHP 5.x ou PHP 7.0-7.3 | `-PhpVersion 74`, puis `81`, puis `84` | Migration progressive plus facile a tester. |
+| Projet PHP 7.4 | `-PhpVersion 81` ou `84` | Bon equilibre entre modernisation et compatibilite. |
+| Projet PHP 8.0-8.2 | `-PhpVersion 84` | Mise a jour vers la cible la plus recente couverte par le projet. |
+| Projet avec son propre `rector.php` | `-ConfigFile "rector.php" -UseRawConfig` | Respecte exactement la configuration existante. |
 
-### 2. Readable (recommandé)
-- Rapport détaillé
-- Explication des changements
-- Recommandations
+Dans cette documentation, **legacy** ou **ancien** designe une base de code ecrite pour PHP 5.x, PHP 7.0-7.3, ou des conventions qui n'ont pas ete mises a jour depuis plusieurs annees. **Moderne** designe une cible PHP actuellement maintenue et des idiomes recents ; dans ce projet, cela correspond surtout a PHP 8.1 a PHP 8.4.
 
-### 3. Detailed
-- Analyse exhaustive
-- Plan d'action
-- Exemples de code
+## Formats de rapport
 
-### 4. JSON
-- Sortie brute Rector
-- Pour traitement automatisé
+| Format | Usage |
+|--------|-------|
+| `simple` | Resume rapide. |
+| `readable` | Rapport lisible recommande au quotidien. |
+| `detailed` | Rapport plus complet pour preparer une migration. |
+| `json` | Sortie brute Rector pour integration ou traitement automatise. |
 
-## 🔧 Configuration personnalisée
+Exemple :
 
-### Adapter rector.php
-```php
-<?php
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->paths([
-        __DIR__ . '/src',        // Votre code source
-        __DIR__ . '/app',        // Application Laravel/Symfony
-        __DIR__ . '/lib',        // Bibliothèques
-    ]);
-
-    $rectorConfig->sets([
-        LevelSetList::UP_TO_PHP_84,  // Version cible
-        SetList::CODE_QUALITY,       // Qualité du code
-    ]);
-
-    $rectorConfig->skip([
-        __DIR__ . '/vendor',     // Exclusions
-        __DIR__ . '/cache',
-    ]);
-};
-```
-
-### Utiliser les configurations pré-définies
 ```powershell
-# PHP 8.1
-.\rector-analyze.ps1 -ConfigFile "config\rector-php81.php"
-
-# PHP 8.2
-.\rector-analyze.ps1 -ConfigFile "config\rector-php82.php"
-
-# PHP 8.4 (complet)
-.\rector-analyze.ps1 -ConfigFile "config\rector-php84.php"
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 84 -OutputFormat readable
 ```
 
-## 📈 Workflow recommandé
+## Workflow recommande
 
-### 1. Analyse initiale
+1. Verifier que le projet cible est versionne avec Git.
+2. Lancer une analyse en dry-run.
+3. Lire le rapport et choisir une cible raisonnable.
+4. Appliquer sur une branche dediee.
+5. Lancer les tests du projet cible.
+6. Recommencer par etapes si le diff est trop grand.
+
 ```powershell
-.\rector-analyze.ps1 -OutputFormat readable -OutputFile "analyse-initiale.md"
-```
-
-### 2. Sauvegarde
-```bash
-git add .
-git commit -m "Avant modernisation Rector"
+git status
 git checkout -b feature/rector-modernization
+
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 81 -DryRun:$true
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 81 -DryRun:$false
 ```
 
-### 3. Application progressive
-```bash
-# Appliquer par catégorie
-rector process --only=TypeDeclarationRector --dry-run
-rector process --only=TypeDeclarationRector
+## Utiliser une configuration existante
 
-# Ou tout en une fois
-rector process
-```
+Par defaut, `rector-analyze.ps1` genere une configuration dynamique a partir de `-PhpVersion`. Pour utiliser un fichier Rector existant sans le modifier :
 
-### 4. Validation
-```bash
-# Tests
-./vendor/bin/phpunit
-
-# Analyse post-migration
-.\rector-analyze.ps1 -OutputFormat simple
-```
-
-## 🛟 Dépannage
-
-### Problèmes courants
-
-**Rector introuvable**
 ```powershell
-# Installation globale
-composer global require rector/rector
-
-# Ou installation locale
-composer require rector/rector --dev
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -ConfigFile "rector.php" -UseRawConfig
 ```
 
-**Erreurs de permissions**
+Sans `-UseRawConfig`, `-ConfigFile` sert surtout a deduire une version cible depuis un nom comme `rector-php81.php`.
+
+## Historique et logs
+
 ```powershell
-# Exécuter en tant qu'administrateur
+.\rector-analyze.ps1 -ShowHistory -HistoryCount 20
+.\rector-analyze.ps1 -ShowLogs
+```
+
+Les logs et l'historique se trouvent dans `logs/`.
+
+## Depannage
+
+### Rector introuvable
+
+```powershell
+.\scripts\install-rector.ps1 -ProjectPath "C:\mon\projet"
+```
+
+### Politique d'execution PowerShell
+
+```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-**Encodage PowerShell**
+### Trop de changements
+
 ```powershell
-# Forcer UTF-8
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 74 -DryRun:$true
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 81 -DryRun:$true
+.\rector-analyze.ps1 -ProjectPath "C:\mon\projet" -PhpVersion 84 -DryRun:$true
 ```
 
-### Obtenir de l'aide
-```powershell
-# Aide du script principal
-.\rector-analyze.ps1 -Help
+### Tests de ce projet
 
-# Aide des scripts individuels
-.\scripts\analyze-rector-simple.ps1 -Help
+```powershell
+.\run_unit_tests.bat
+.\test-installation.ps1 -Quick
 ```
 
-## 💡 Conseils d'utilisation
-
-### Pour les petits projets
-- Utilisez le format **simple**
-- Appliquez tous les changements en une fois
-- Testez immédiatement
-
-### Pour les gros projets
-- Commencez par le format **detailed**
-- Appliquez par catégories
-- Testez après chaque étape
-
-### Pour les équipes
-- Partagez les rapports via Git
-- Discutez les changements en code review
-- Documentez les décisions
-
-## 🔗 Ressources utiles
+## Ressources utiles
 
 - [Documentation Rector](https://github.com/rectorphp/rector)
 - [Migration PHP](https://www.php.net/migration84)
-- [Meilleures pratiques](https://phptherightway.com/)
-- [Tests PHPUnit](https://phpunit.de/)
-
----
-
-**Prêt à moderniser votre code PHP ? Lancez votre première analyse !** 🚀
+- [PHP The Right Way](https://phptherightway.com/)
+- [PHPUnit](https://phpunit.de/)

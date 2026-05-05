@@ -1,6 +1,8 @@
 # 🚀 Guide de Démarrage Rapide - Migration Multi-versions
 
-> **Mise en route express pour migrer votre code PHP vers une version moderne**
+> **Mise en route express pour migrer votre code PHP vers une version cible maintenue, généralement PHP 8.1 à PHP 8.4**
+
+Dans ce guide, **ancien** ou **legacy** désigne du code PHP 5.x, PHP 7.0-7.3, ou une base de code restée sur d'anciennes conventions. **Moderne** désigne ici une cible PHP maintenue avec des idiomes récents, le plus souvent PHP 8.1 à PHP 8.4.
 
 ## 🎯 Premiers pas (5 minutes)
 
@@ -45,7 +47,7 @@ php -v
 # Migration la plus courante : PHP 7.4 → PHP 8.1
 .\rector-analyze.ps1 -ConfigFile "config\rector-php81.php"
 
-# Vieux code PHP → PHP 8.4
+# Vieux code PHP 5.x ou PHP 7.0-7.3 → PHP 8.4
 .\rector-analyze.ps1 -ConfigFile "config\rector-old-code-to-php84.php"
 
 # Dernière version PHP
@@ -77,7 +79,7 @@ php -v
 .\rector-analyze.ps1 -ProjectPath "C:\wordpress" -ConfigFile "config\rector-php74.php" -DryRun:$false
 ```
 
-### Scénario 2 : Application Laravel moderne
+### Scénario 2 : Application Laravel déjà sur PHP récent
 ```powershell
 # Migration directe vers PHP 8.4
 .\rector-analyze.ps1 -ProjectPath "C:\mon-laravel" -ConfigFile "config\rector-php84.php"

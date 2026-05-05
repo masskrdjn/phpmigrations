@@ -2,6 +2,8 @@
 
 Outils PowerShell pour analyser et moderniser des projets PHP avec [Rector](https://github.com/rectorphp/rector).
 
+Dans ce projet, **ancien** ou **legacy** désigne du code écrit pour PHP 5.x, PHP 7.0-7.3, ou des conventions qui n'ont pas été mises à jour depuis plusieurs années. **Moderne** désigne du code ciblant une version PHP maintenue et des pratiques récentes, généralement PHP 8.1 à PHP 8.4 selon vos contraintes de production.
+
 Le point d'entrée principal est `rector-analyze.ps1`. Il peut tourner en mode interactif ou en ligne de commande, générer une configuration Rector temporaire selon la version PHP cible, transformer la sortie JSON de Rector en rapports lisibles, et conserver les logs/historiques d'analyse.
 
 ## Fonctionnalités
@@ -176,7 +178,7 @@ Les tests créent des projets PHP temporaires et vérifient que `rector-analyze.
 
 ## Documentation
 
-- [Documentation anglaise](README-EN.md)
+- [Documentation anglaise](README.md)
 - [Guide de démarrage](docs/getting-started.md)
 - [Démarrage rapide](docs/quick-start.md)
 - [Configuration avancée](docs/advanced-config.md)

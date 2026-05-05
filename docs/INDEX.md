@@ -1,142 +1,110 @@
-# 📚 Documentation Index / Index de Documentation
+# Documentation Index
 
-> **Complete documentation for Rector PHP Analysis Tools**
-> **Documentation complète pour Rector PHP Analysis Tools**
+Complete documentation for Rector PHP Analysis Tools.
 
-## 🌐 Languages / Langues
+## Languages
 
-### �� English Documentation
+### English Documentation
 
-#### Main guides
+#### Main Guides
 - **[README.md](../README.md)** - Main project documentation
 - **[Quick Start Guide](quick-start-en.md)** - Setup in 5 minutes
 - **[Migration Guide](migration-guide-en.md)** - Complete multi-version migration
-- **[New Features](../NEW-FEATURES-EN.md)** - Multi-version extension
 
-#### Specialized guides
+#### Specialized Guides
 - **[Advanced Configuration](advanced-config.md)** - In-depth customization
-- **[Getting Started](getting-started.md)** - Installation and first tests
+- **[Getting Started](getting-started.md)** - First installation and first analysis
 
-#### Project history
-- **[Development History](../DEVELOPMENT-HISTORY.md)** - Complete project evolution
-- **[Creation Report](../CREATION-REPORT.md)** - Project genesis
+#### Project
 - **[Contributing Guide](../CONTRIBUTING-EN.md)** - How to contribute
 
-### �� Documentation en Français
+### Documentation en Francais
 
-#### Guides principaux
+#### Guides Principaux
 - **[README-FR.md](../README-FR.md)** - Documentation principale du projet
-- **[Guide de démarrage rapide](quick-start.md)** - Mise en route en 5 minutes
-- **[Guide de migration](migration-guide.md)** - Migration complète multi-versions
-- **[Nouvelles fonctionnalités](../NOUVELLES-FONCTIONNALITES.md)** - Extension multi-versions
+- **[Guide de demarrage rapide](quick-start.md)** - Mise en route en 5 minutes
+- **[Guide de migration](migration-guide.md)** - Migration complete multi-versions
 
-#### Guides spécialisés
-- **[Configuration avancée](advanced-config.md)** - Personnalisation approfondie
-- **[Premiers pas](getting-started.md)** - Installation et premiers tests
+#### Guides Specialises
+- **[Configuration avancee](advanced-config.md)** - Personnalisation approfondie
+- **[Premiers pas](getting-started.md)** - Installation et premiere analyse
 
-#### Historique du projet
-- **[Historique de développement](../DEVELOPMENT-HISTORY.md)** - Évolution complète du projet
-- **[Rapport de création](../CREATION-REPORT.md)** - Genèse du projet
+#### Projet
 - **[Guide de contribution](../CONTRIBUTING.md)** - Comment contribuer
 
-## 🎯 Documentation par scénario / Documentation by Scenario
+## Terms
 
-### Migration Scenarios / Scénarios de migration
+| Term | Meaning |
+|------|---------|
+| **Legacy / ancien** | A PHP codebase written for an old runtime or old conventions, usually PHP 5.x, PHP 7.0-7.3, or code that has not followed current PHP practices for several years. |
+| **Modern / moderne** | Code targeting a currently maintained PHP version and syntax style. In this project, that usually means PHP 8.1 to PHP 8.4 depending on your production constraints. |
 
-| Scenario | English | Français |
+## Documentation by Scenario
+
+### Migration Scenarios
+
+| Scenario | English | Francais |
 |----------|---------|----------|
-| **Quick start / Démarrage rapide** | [quick-start-en.md](quick-start-en.md) | [quick-start.md](quick-start.md) |
-| **Progressive migration / Migration progressive** | [migration-guide-en.md](migration-guide-en.md) | [migration-guide.md](migration-guide.md) |
-| **Custom configuration / Configuration custom** | [advanced-config.md](advanced-config.md) | [advanced-config.md](advanced-config.md) |
+| **Quick start** | [quick-start-en.md](quick-start-en.md) | [quick-start.md](quick-start.md) |
+| **Progressive migration** | [migration-guide-en.md](migration-guide-en.md) | [migration-guide.md](migration-guide.md) |
+| **Custom configuration** | [advanced-config.md](advanced-config.md) | [advanced-config.md](advanced-config.md) |
 
-### Project Levels / Niveaux de projet
+### Project Levels
 
 | Level | Description | Documentation |
 |-------|-------------|---------------|
-| **Beginner / Débutant** | First use | [getting-started.md](getting-started.md) |
-| **Intermediate / Intermédiaire** | Common migrations | [quick-start-en.md](quick-start-en.md) / [quick-start.md](quick-start.md) |
-| **Advanced / Avancé** | Custom configurations | [advanced-config.md](advanced-config.md) |
-| **Expert** | Contribution & development | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) / [CONTRIBUTING.md](../CONTRIBUTING.md) |
+| **Beginner** | First use | [getting-started.md](getting-started.md) |
+| **Intermediate** | Common migrations | [quick-start-en.md](quick-start-en.md) / [quick-start.md](quick-start.md) |
+| **Advanced** | Custom configurations | [advanced-config.md](advanced-config.md) |
+| **Expert** | Contribution and development | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) / [CONTRIBUTING.md](../CONTRIBUTING.md) |
 
-## 🤝 Contributing / Contribution
+## Technical Reference
 
-### How to contribute / Comment contribuer
-
-| Task / Tâche | English | Français |
-|--------------|---------|----------|
-| **Bug report / Signaler un bug** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
-| **Feature request / Demander une fonctionnalité** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
-| **Code contribution / Contribution de code** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
-| **Documentation / Documentation** | [CONTRIBUTING-EN.md](../CONTRIBUTING-EN.md) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
-
-## 🔧 Technical Documentation / Documentation Technique
-
-### Configuration Files / Fichiers de configuration
+### Configuration Files
 
 | Version | Configuration | Description |
 |---------|---------------|-------------|
-| **PHP 5.6** | `config/rector-php56.php` | Legacy projects |
-| **PHP 7.0** | `config/rector-php70.php` | First modern migration |
-| **PHP 7.4** | `config/rector-php74.php` | Typed properties |
-| **PHP 8.0** | `config/rector-php80.php` | Union types, match |
-| **PHP 8.1** | `config/rector-php81.php` | Enums, fibers |
-| **PHP 8.2** | `config/rector-php82.php` | Readonly classes |
-| **PHP 8.3** | `config/rector-php83.php` | Typed constants |
-| **PHP 8.4** | `config/rector-php84.php` | Property hooks |
-| **Customizable** | `config/rector-customizable.php` | Copy-and-edit starter config |
-| **Old Code→PHP 8.4** | `config/rector-old-code-to-php84.php` | Complete migration |
+| **PHP 5.6** | `config/rector-php56.php` | For legacy PHP 5.6 projects, usually as a first compatibility step. |
+| **PHP 7.0** | `config/rector-php70.php` | First step toward PHP 7 syntax and type declarations. |
+| **PHP 7.4** | `config/rector-php74.php` | Typed properties and common PHP 7 modernization. |
+| **PHP 8.0** | `config/rector-php80.php` | Union types, match expressions, and PHP 8 baseline changes. |
+| **PHP 8.1** | `config/rector-php81.php` | Enums, readonly properties, and common current-runtime targets. |
+| **PHP 8.2** | `config/rector-php82.php` | Readonly classes and PHP 8.2 compatibility. |
+| **PHP 8.3** | `config/rector-php83.php` | Typed constants and PHP 8.3 compatibility. |
+| **PHP 8.4** | `config/rector-php84.php` | Latest target currently covered by this project. |
+| **Customizable** | `config/rector-customizable.php` | Copy-and-edit starter config. |
+| **Old Code to PHP 8.4** | `config/rector-old-code-to-php84.php` | Direct migration profile for old PHP 5.x or early PHP 7.x codebases targeting PHP 8.4. |
 
-### Scripts / Scripts
+### Scripts
 
 | Script | Purpose | Documentation |
 |--------|---------|---------------|
 | `rector-analyze.ps1` | Main interface | [README.md](../README.md) |
-| `scripts/install-rector.ps1` | Installation | [getting-started.md](getting-started.md) |
+| `scripts/install-rector.ps1` | Rector installation helper | [getting-started.md](getting-started.md) |
 | `scripts/analyze-*.ps1` | Report generation | [quick-start-en.md](quick-start-en.md) |
 
-## 🎮 VS Code Integration / Intégration VS Code
-
-### Tasks / Tâches disponibles
-
-- **🚀 Rector: Menu Interactif** - Interface complète
-- **🔄 Migration: vieux code PHP → PHP 8.4** - Migration complète
-- **🎯 Migration: PHP 7.4 → 8.1** - Migration courante
-- **🚀 Migration: PHP 8.x → 8.4** - Dernière version
-- **🛠️ Configuration: personnalisable** - Configuration personnalisable
-
-### Extensions recommandées
-
-- **PowerShell** - Pour l'exécution des scripts
-- **PHP** - Support du langage PHP
-- **Rector** - Support Rector (si disponible)
-
-## 📊 Quick Reference / Référence Rapide
-
-### Common Commands / Commandes courantes
+## Quick Reference
 
 ```powershell
-# Interactive menu / Menu interactif
+# Interactive menu
 .\rector-analyze.ps1
 
-# Quick migration / Migration rapide
-.\rector-analyze.ps1 -ConfigFile "config\rector-php81.php"
+# Recommended dynamic target selection
+.\rector-analyze.ps1 -ProjectPath "C:\my\project" -PhpVersion 84
 
-# Safe analysis / Analyse sécurisée
-.\rector-analyze.ps1 -DryRun:$true
+# Safe analysis, explicit dry-run
+.\rector-analyze.ps1 -ProjectPath "C:\my\project" -PhpVersion 81 -DryRun:$true
 
-# Old code to PHP 8.4 / Vieux code vers PHP 8.4
-.\rector-analyze.ps1 -ConfigFile "config\rector-old-code-to-php84.php"
+# Use an existing Rector config exactly as-is
+.\rector-analyze.ps1 -ProjectPath "C:\my\project" -ConfigFile "rector.php" -UseRawConfig
 ```
 
-### Migration Paths / Chemins de migration
+## Migration Paths
 
+```text
+PHP 5.6 -> PHP 7.0 -> PHP 7.4 -> PHP 8.1 -> PHP 8.4
+PHP 7.4 -> PHP 8.1 -> PHP 8.4
+PHP 8.x -> PHP 8.4
 ```
-PHP 5.6 → PHP 7.0 → PHP 7.4 → PHP 8.1 → PHP 8.4
-      ↘ PHP 7.4 ↗      ↘ PHP 8.4 ↗
-```
 
----
-
-💡 **Tip / Conseil** : Start with the Quick Start guide appropriate to your language / Commencez par le guide de démarrage rapide dans votre langue !
-
-📖 **Default language**: English documentation is shown first / **Langue par défaut** : La documentation anglaise est affichée en premier
+Start with the quick start guide in your preferred language, then move to the migration guide when you need a broader strategy.

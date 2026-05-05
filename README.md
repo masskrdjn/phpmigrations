@@ -2,6 +2,8 @@
 
 PowerShell tooling to analyze and modernize PHP projects with [Rector](https://github.com/rectorphp/rector).
 
+In this project, **legacy** means code written for PHP 5.x, PHP 7.0-7.3, or older conventions that have not been updated for several years. **Modern** means code targeting a currently maintained PHP runtime and syntax style, usually PHP 8.1 to PHP 8.4 depending on your production constraints.
+
 The main entry point is `rector-analyze.ps1`. It can run interactively or from the command line, generate a temporary Rector configuration for the selected target PHP version, format Rector JSON output into readable reports, and keep logs/history for later review.
 
 ## What It Does

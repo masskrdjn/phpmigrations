@@ -1,6 +1,8 @@
 # Guide de Migration PHP Multi-versions
 
-> **Guide complet pour migrer votre code PHP depuis n'importe quelle version vers une version plus récente**
+> **Guide complet pour migrer votre code PHP depuis une ancienne version vers une version cible maintenue**
+
+Dans ce guide, **ancien** ou **legacy** désigne du code PHP 5.x, PHP 7.0-7.3, ou une base de code restée sur d'anciennes conventions. **Moderne** désigne une cible PHP maintenue avec des idiomes récents ; dans ce projet, cela correspond surtout à PHP 8.1, PHP 8.2, PHP 8.3 ou PHP 8.4.
 
 ## 📋 Versions PHP supportées
 
@@ -26,10 +28,10 @@ Notre outil supporte maintenant la migration depuis et vers toutes les versions 
 | Configuration | Description | Recommandé pour |
 |---------------|-------------|-----------------|
 | `rector-php56.php` | Migration vers PHP 5.6 | Projets PHP très anciens |
-| `rector-php70.php` | Migration vers PHP 7.0 | Premier pas vers PHP moderne |
+| `rector-php70.php` | Migration vers PHP 7.0 | Premier pas vers PHP 7 et les types scalaires |
 | `rector-php71.php` | Migration vers PHP 7.1 | Ajout des nullable types |
 | `rector-php72.php` | Migration vers PHP 7.2 | Amélioration des types |
-| `rector-php73.php` | Migration vers PHP 7.3 | Syntaxe moderne |
+| `rector-php73.php` | Migration vers PHP 7.3 | Syntaxe PHP 7 plus récente |
 | `rector-php74.php` | Migration vers PHP 7.4 | Typed properties |
 | `rector-php80.php` | Migration vers PHP 8.0 | Features majeures PHP 8 |
 | `rector-php81.php` | Migration vers PHP 8.1 | Enums et améliorations |
@@ -95,7 +97,7 @@ Pour migrer vers une version spécifique :
 
 ### Depuis PHP 8.x
 - ✅ **Versions supérieures** - Migration très sûre
-- ✅ **Features modernes** - Adoption progressive
+- ✅ **Fonctionnalités PHP récentes** - Adoption progressive
 
 ## ⚙️ Utilisation avec l'interface interactive
 
@@ -200,7 +202,7 @@ php -v
 ### Script personnalisé
 
 ```powershell
-# Script personnalisé → PHP moderne
+# Script personnalisé → PHP 8.4
 .\rector-analyze.ps1 -ProjectPath "C:\mon-script" -ConfigFile "rector-old-code-to-php84.php"
 ```
 
@@ -219,7 +221,7 @@ php -v
 - **Constructor promotion** : Code plus concis
 
 ### Migration vers PHP 8.4
-- **Property hooks** : Encapsulation moderne
+- **Property hooks** : Encapsulation plus expressive en PHP 8.4
 - **Asymmetric visibility** : Contrôle granulaire
 - **Performance** : Optimisations continues
 - **Sécurité** : Corrections de bugs
